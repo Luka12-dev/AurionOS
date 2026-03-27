@@ -1986,7 +1986,7 @@ make all</code>
 
                 log('V86 library found. Constructor type: ' + typeof Emulator, 'success');
 
-                var isoUrl = '../build/aurionos_debug.iso?t=' + Date.now();
+                var isoUrl = 'aurionos_debug.iso?t=' + Date.now();
                 log('Checking for ISO at: ' + isoUrl);
 
                 fetch(isoUrl, { method: 'HEAD' })
