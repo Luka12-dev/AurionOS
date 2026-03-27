@@ -1,0 +1,38 @@
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Log files
+*.log
+*.txt
+!README.txt
+!LICENSE.txt
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb

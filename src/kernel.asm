@@ -1,0 +1,275 @@
+[BITS 32]
+[EXTERN init_interrupts]
+[EXTERN io_init]
+[EXTERN mem_init]
+[EXTERN shell_main]
+[EXTERN desktop_main]
+[EXTERN get_ticks]
+[EXTERN puts]
+[EXTERN putc]
+[EXTERN cls]
+[EXTERN getkey_block]
+[EXTERN io_set_attr]
+[EXTERN c_puts]
+[EXTERN set_attr]
+[EXTERN vesa_reinit_mode]
+[EXTERN serial_init]
+[EXTERN serial_puts]
+[EXTERN __bss_start]
+[EXTERN __bss_end]
+[EXTERN __kernel_end]
+
+[GLOBAL kernel_entry]
+[GLOBAL sys_reboot]
+[GLOBAL boot_mode_flag]
+[GLOBAL bios_ram_kb]
+[GLOBAL bios_ram_bytes]
+
+section .data
+; 0 = GUI mode (default), 1 = DOS/CLI mode
+boot_mode_flag dd 0
+bios_ram_kb    dd 0
+bios_ram_bytes dd 0
+
+section .text.start
+kernel_entry:
+    cli
+    
+    ; Set up segments
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
+    ; Setup stack above BSS
+    mov esp, 0x001F0000
+    mov ebp, esp
+    cld
+
+    ; Zero out the .bss section
+    mov edi, __bss_start
+    mov ecx, __bss_end
+    sub ecx, edi
+    shr ecx, 2      ; Number of dwords
+    xor eax, eax
+    rep stosd       ; Clear memory
+
+    ; Read BIOS-detected RAM (bootloader stores total KB at 0x9010)
+    mov eax, [0x9010]
+    mov [bios_ram_kb], eax
+
+    ; Convert KB to bytes, capping at 4GB-1
+    cmp eax, 0x400000       ; 4GB in KB = 4194304
+    ja .cap_4gb
+    shl eax, 10             ; KB * 1024 = bytes
+    jmp .done_ram
+.cap_4gb:
+    mov eax, 0xFFFFFFFF
+.done_ram:
+    mov [bios_ram_bytes], eax
+
+    ; Mask PICs fully initially
+    mov al, 0xFF
+    out 0x21, al
+    out 0xA1, al
+
+    ; Initialize IDT/PIC
+    call init_interrupts
+
+    ; Init I/O (text mode console -- used for debug and DOS mode)
+    call io_init
+
+    ; Clear screen immediately - don't print anything yet
+    call cls
+
+    ; Mask keyboard interrupt during early boot to prevent spurious characters
+    ; The keyboard IRQ fires if a key is held or due to electrical noise during init
+    in al, 0x21
+    or al, 0x02
+    out 0x21, al
+
+    ; DON'T print kernel_ok_msg or system_ready_msg yet
+    ; We'll print them only if we're in GUI mode
+
+
+    ; Init memory - heap starts at __kernel_end (aligned to 4KB)
+    ; Heap size = detected RAM - 4MB (reserved for kernel/stack/devices)
+    mov eax, __kernel_end
+    add eax, 4095
+    and eax, 0xFFFFF000         ; Align to 4KB
+    mov ebx, [bios_ram_bytes]
+    sub ebx, 0x00400000         ; Subtract 4MB for kernel/stack/devices
+    cmp ebx, 0x00400000         ; Minimum 4MB heap
+    jae .heap_ok
+    mov ebx, 0x00400000         ; Force minimum 4MB
+.heap_ok:
+    call mem_init
+
+    ; DON'T print mem_init_msg or enabling_int_msg
+    ; Silent boot for clean terminal
+
+    ; --- Program PIT channel 0 to 100 Hz ---
+    ; PIT base clock = 1,193,182 Hz. Divisor = 11932 = 0x2E9C (~100.0 Hz)
+    ; Must be done AFTER sti so IRQ0 fires correctly, but we set it here
+    ; before sti to avoid spurious ticks during setup.
+    mov al, 0x36        ; Channel 0, lobyte/hibyte, mode 3 (square wave)
+    out 0x43, al
+    mov al, 0x00        ; Delay
+    out 0x80, al
+    
+    mov al, 0x9C        ; low byte of 11932 (0x2E9C)
+    out 0x40, al
+    mov al, 0x00        ; Delay
+    out 0x80, al
+    
+    mov al, 0x2E        ; high byte of 11932 (0x2E9C)
+    out 0x40, al
+    mov al, 0x00        ; Delay
+    out 0x80, al
+
+    ; Unmask timer, keyboard, cascade (IRQ0, IRQ1, IRQ2)
+    mov al, 0xF8
+    out 0x21, al
+    ; Unmask IRQ12 on slave PIC for PS/2 mouse
+    mov al, 0xEF
+    out 0xA1, al
+
+    sti
+
+
+    ; Small delay for hardware settle
+    mov ecx, 5000000
+.delay:
+    dec ecx
+    jnz .delay
+
+
+    ; Debug: Pre-VESA
+    push dword msg_pre_vesa
+    call serial_puts
+    add esp, 4
+
+.mode_loop:
+    ; Check boot mode flag
+    cmp dword [boot_mode_flag], 1
+    je .dos_mode
+
+    ; GUI Mode
+    ; push dword starting_gui_msg
+    ; call puts
+    ; add esp, 4
+
+
+    ; Initialize VESA mode (uses bootloader BIOS info or Bochs VBE fallback)
+    call vesa_reinit_mode
+
+
+    ; Debug: Post-VESA
+    push dword msg_post_vesa
+    call serial_puts
+    add esp, 4
+
+    call desktop_main
+    ; desktop_main returns 0 = switch to DOS mode, 1 = shutdown
+    cmp eax, 0
+    je .switch_to_dos
+    jmp .hang
+
+.switch_to_dos:
+    mov dword [boot_mode_flag], 1
+    ; Text mode is set by desktop_main before returning
+    ; Re-init I/O for text console
+    call io_init
+    
+    ; Long delay for hardware settle
+    mov ecx, 10000000
+.delay_dos:
+    dec ecx
+    jnz .delay_dos
+    
+    ; Extra clear to remove any garbage
+    call cls
+    call cls
+    call cls
+
+    push dword dos_mode_msg
+    call puts
+    add esp, 4
+
+    call shell_main
+    ; shell_main returns when GUIMODE is typed
+    mov dword [boot_mode_flag], 0
+
+    ; Re-initialize VESA mode
+    call vesa_reinit_mode
+    jmp .mode_loop
+
+.dos_mode:
+    ; Clear screen FIRST before any delay
+    call cls
+    call cls
+    call cls
+    
+    ; Long delay for hardware settle
+    mov ecx, 10000000
+.delay_boot:
+    dec ecx
+    jnz .delay_boot
+    
+    ; One more clear after delay
+    call cls
+    
+    push dword calling_shell_msg
+    call puts
+    add esp, 4
+
+    call shell_main
+    ; If shell returns (GUIMODE typed), switch to GUI
+    mov dword [boot_mode_flag], 0
+    call vesa_reinit_mode
+    jmp .mode_loop
+
+.hang:
+    cli
+    push dword shell_exit_msg
+    call puts
+    add esp, 4
+
+.halt_loop:
+    hlt
+    jmp .halt_loop
+
+sys_reboot:
+    cli
+    mov al, 0xFE
+    out 0x64, al
+    hlt
+    jmp $
+
+section .rodata
+kernel_ok_msg       db "Aurion OS Kernel v1.0 Release", 13, 10, 0
+system_ready_msg    db "System initialized", 13, 10, 0
+mem_init_msg        db "Memory manager ready", 13, 10, 0
+enabling_int_msg    db "Enabling interrupts...", 13, 10, 0
+calling_shell_msg   db "Starting Aurion Shell...", 13, 10, 13, 10, 0
+starting_gui_msg    db "Starting Aurion Desktop...", 13, 10, 0
+dos_mode_msg        db 13, 10, "Entering DOS compatibility mode...", 13, 10, 13, 10, 0
+shell_exit_msg      db 13, 10, "System halted.", 13, 10, 0
+
+    ; Serial debug messages
+    msg_kernel_entry db "[SERIAL] Kernel entry", 13, 10, 0
+    msg_segments_ok  db "[SERIAL] Segments OK", 13, 10, 0
+    msg_stack_ok     db "[SERIAL] Stack OK", 13, 10, 0
+    msg_pic_masked   db "[SERIAL] PIC masked", 13, 10, 0
+    msg_idt_ok       db "[SERIAL] IDT initialized", 13, 10, 0
+    msg_io_ok        db "[SERIAL] I/O initialized", 13, 10, 0
+    msg_cls_ok       db "[SERIAL] CLS called", 13, 10, 0
+    msg_kernel_start db "Kernel: Started", 10, 0
+    msg_pre_vesa     db "Kernel: Pre-VESA", 10, 0
+    msg_post_vesa    db "Kernel: Post-VESA, calling desktop_main", 10, 0
+    msg_gui_ret      db "Kernel: Desktop returned", 10, 0
+
+    ; Kernel stack
+    SECTION .bss
