@@ -529,9 +529,8 @@ static bool check_installed(void) {
         c_puts("\n"); */
         return true;
     }
-}
-
-/* c_puts("[DESKTOP] No installation marker found anywhere\n"); */
+    
+    /* c_puts("[DESKTOP] No installation marker found anywhere\n"); */
     return false;
 }
 
