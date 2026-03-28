@@ -1983,8 +1983,9 @@ make all</code>
 
         /*
          * Focus/unfocus the VM.
-         * "Focus" means: overlay hidden, cursor hidden, pointer locked.
-         * "Unfocus" means: overlay shown, cursor visible, pointer unlocked.
+         * "Focus" means: overlay hidden, cursor hidden.
+         * "Unfocus" means: overlay shown, cursor visible.
+         * NO POINTER LOCK - use absolute mouse mode only for Linux compatibility
          */
         function focusVM() {
             if (vmFocused) return;
@@ -1992,17 +1993,10 @@ make all</code>
             hideClickToFocus();
             document.body.classList.add('vm-focused');
 
-            /* Request pointer lock on the canvas */
-            var canvas = getEmulatorCanvas();
-            if (canvas) {
-                var req = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-                if (req) {
-                    try { req.call(canvas); }
-                    catch (e) { log('Pointer lock request failed: ' + e.message, 'warn'); }
-                }
-            }
+            /* DO NOT request pointer lock - causes freeze on Linux */
+            /* V86 will use absolute mouse mode instead */
 
-            log('VM focused — cursor hidden, pointer lock requested');
+            log('VM focused — cursor hidden, using absolute mouse mode');
         }
 
         function unfocusVM() {
@@ -2014,52 +2008,18 @@ make all</code>
         }
 
         /*
-         * POINTER LOCK: watch for changes.
-         * When locked → hide cursor (browser does it) + add class.
-         * When unlocked → show overlay + remove class.
+         * POINTER LOCK DISABLED FOR LINUX COMPATIBILITY
+         * Using absolute mouse mode only - no pointer lock needed
          */
         (function () {
             var banner = document.getElementById('mouse_lock_banner');
+            /* Hide the banner since we're not using pointer lock */
+            if (banner) banner.style.display = 'none';
 
-            function onPointerLockChange() {
-                var lockEl = document.pointerLockElement || document.mozPointerLockElement;
-                var canvas = getEmulatorCanvas();
-                var container = document.getElementById('screen_container');
-                var locked = lockEl && (lockEl === canvas || lockEl === container);
+            /* Keep isPointerLocked always false */
+            isPointerLocked = false;
 
-                isPointerLocked = !!locked;
-
-                if (locked) {
-                    document.body.classList.add('pointer-locked');
-                    banner.classList.add('visible');
-                    hideClickToFocus();
-                    vmFocused = true;
-                    log('Pointer LOCKED');
-                } else {
-                    document.body.classList.remove('pointer-locked');
-                    banner.classList.remove('visible');
-                    /* Only unfocus if we were previously focused */
-                    if (vmFocused) {
-                        unfocusVM();
-                    }
-                    log('Pointer UNLOCKED');
-                }
-            }
-
-            document.addEventListener('pointerlockchange', onPointerLockChange, false);
-            document.addEventListener('mozpointerlockchange', onPointerLockChange, false);
-
-            document.addEventListener('pointerlockerror', function () {
-                log('Pointer lock denied — using cursor:none fallback', 'warn');
-                /*
-                 * Pointer lock failed, but we still hide the cursor via CSS.
-                 * The vm-focused class on body triggers cursor:none on #screen_container.
-                 * V86 still works in absolute mouse mode.
-                 */
-            }, false);
-            document.addEventListener('mozpointerlockerror', function () {
-                log('Pointer lock denied (Firefox) — using cursor:none fallback', 'warn');
-            }, false);
+            log('Pointer lock disabled - using absolute mouse mode for Linux compatibility');
         })();
 
         /*
@@ -2080,10 +2040,11 @@ make all</code>
 
             sc.addEventListener('mousedown', function (e) {
                 if (!emulatorReady) return;
-                /* Don't check isPointerLocked - allow re-locking if needed */
-
-                /* Focus the VM: hide overlay + cursor, lock pointer */
+                /* Focus the VM: hide overlay + cursor (NO pointer lock) */
                 focusVM();
+                /* Ensure canvas has focus for keyboard input */
+                var canvas = getEmulatorCanvas();
+                if (canvas) canvas.focus();
             });
         })();
 
@@ -2093,7 +2054,6 @@ make all</code>
          */
         document.addEventListener('mousedown', function (e) {
             if (!vmFocused) return;
-            if (isPointerLocked) return; /* Esc handles this */
 
             /* Check if click is inside screen_container */
             var sc = document.getElementById('screen_container');
@@ -2103,8 +2063,6 @@ make all</code>
         });
 
         document.addEventListener('keydown', function (e) {
-            if (isPointerLocked) return;
-
             if (e.key === 'Escape') {
                 if (vmFocused) unfocusVM();
                 if (isFullscreen) toggleFullscreen();
