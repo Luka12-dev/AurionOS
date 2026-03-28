@@ -1933,6 +1933,7 @@ make all</code>
         var isPointerLocked = false;
         var isFullscreen = false;
         var emulatorReady = false;
+        var isLinux = /Linux/i.test(navigator.userAgent) && !/Android/i.test(navigator.userAgent);
         var vmFocused = false;
 
         function getEmulatorCanvas() {
@@ -1983,7 +1984,7 @@ make all</code>
 
         /*
          * Focus/unfocus the VM.
-         * "Focus" means: overlay hidden, cursor hidden, pointer locked.
+         * "Focus" means: overlay hidden, cursor hidden, pointer locked (Windows only).
          * "Unfocus" means: overlay shown, cursor visible, pointer unlocked.
          */
         function focusVM() {
@@ -1992,17 +1993,20 @@ make all</code>
             hideClickToFocus();
             document.body.classList.add('vm-focused');
 
-            /* Request pointer lock on the canvas */
-            var canvas = getEmulatorCanvas();
-            if (canvas) {
-                var req = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-                if (req) {
-                    try { req.call(canvas); }
-                    catch (e) { log('Pointer lock request failed: ' + e.message, 'warn'); }
+            /* Request pointer lock on the canvas - Windows only, Linux uses absolute mode */
+            if (!isLinux) {
+                var canvas = getEmulatorCanvas();
+                if (canvas) {
+                    var req = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+                    if (req) {
+                        try { req.call(canvas); }
+                        catch (e) { log('Pointer lock request failed: ' + e.message, 'warn'); }
+                    }
                 }
+                log('VM focused — cursor hidden, pointer lock requested');
+            } else {
+                log('VM focused — cursor hidden (Linux: absolute mouse mode, no pointer lock)');
             }
-
-            log('VM focused — cursor hidden, pointer lock requested');
         }
 
         function unfocusVM() {
@@ -2240,6 +2244,45 @@ make all</code>
                     if (canvas) {
                         log('Canvas: ' + canvas.width + 'x' + canvas.height, 'success');
                         if (!canvas.hasAttribute('tabindex')) canvas.setAttribute('tabindex', '0');
+
+                        /* CRITICAL FIX: Sync mouse ONLY when focused, STOP scrolling */
+                        var container = document.getElementById('screen_container');
+
+                        function syncMousePosition(e) {
+                            if (!vmFocused || !emulatorReady) return;
+
+                            /* PREVENT scrolling and event bubbling */
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            var rect = canvas.getBoundingClientRect();
+
+                            /* Calculate EXACT pixel coordinates on emulated screen */
+                            var mouseX = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
+                            var mouseY = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+
+                            /* Clamp to screen bounds */
+                            mouseX = Math.max(0, Math.min(canvas.width - 1, mouseX));
+                            mouseY = Math.max(0, Math.min(canvas.height - 1, mouseY));
+
+                            /* Use V86's mouse_set_absolute API for EXACT positioning */
+                            if (emulatorInstance && emulatorInstance.mouse_set_absolute) {
+                                emulatorInstance.mouse_set_absolute(mouseX, mouseY);
+                            }
+                        }
+
+                        container.addEventListener('mousemove', syncMousePosition, { passive: false });
+                        container.addEventListener('mousedown', syncMousePosition, { passive: false });
+
+                        /* STOP wheel scrolling when focused */
+                        container.addEventListener('wheel', function (e) {
+                            if (vmFocused) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                        }, { passive: false });
+
+                        log('Mouse sync: EXACT positioning + scroll block active', 'success');
                     } else {
                         log('No canvas found!', 'error');
                     }
@@ -2278,6 +2321,7 @@ make all</code>
         window.onload = function () {
             log('Platform: ' + navigator.platform);
             log('UA: ' + navigator.userAgent.substring(0, 120));
+            log('Mouse mode: ' + (isLinux ? 'Absolute (no pointer lock)' : 'Pointer lock enabled'));
             hideClickToFocus();
 
             setTimeout(function () {
