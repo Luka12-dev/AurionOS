@@ -1832,7 +1832,8 @@
                         </svg>
                         <div class="click-to-focus-title">Click to take control</div>
                         <div class="click-to-focus-subtitle">Your mouse and keyboard will be captured by the VM. Press
-                            <strong>Esc</strong> to release.
+                            <strong>Esc</strong> to release. If mouse doesn't work, try clicking multiple times or check
+                            browser permissions.
                         </div>
                     </div>
 
@@ -2055,6 +2056,8 @@ make all</code>
             var banner = document.getElementById('mouse_lock_banner');
             var clickOverlay = document.getElementById('click_to_focus');
             var body = document.body;
+            var pointerLockAttempts = 0;
+            var lastAttemptTime = 0;
 
             function onPointerLockChange() {
                 var locked = document.pointerLockElement !== null;
@@ -2065,6 +2068,8 @@ make all</code>
                     body.classList.add('pointer-locked');
                     banner.classList.add('visible');
                     hideClickToFocus();
+                    log('Pointer lock acquired successfully.', 'success');
+                    pointerLockAttempts = 0;
                 } else {
                     /* Pointer released - restore cursor, show overlay again */
                     body.classList.remove('pointer-locked');
@@ -2077,26 +2082,108 @@ make all</code>
             document.addEventListener('mozpointerlockchange', onPointerLockChange, false);
             document.addEventListener('webkitpointerlockchange', onPointerLockChange, false);
 
-            document.addEventListener('pointerlockerror', function () {
-                log('Pointer lock request denied by browser.', 'warn');
-                showToast('Could not capture mouse - try clicking again', 'warn');
+            document.addEventListener('pointerlockerror', function (e) {
+                pointerLockAttempts++;
+                log('Pointer lock request failed (attempt ' + pointerLockAttempts + '). Browser may require user gesture or permission.', 'warn');
+
+                if (pointerLockAttempts === 1) {
+                    showToast('Mouse capture failed - click the screen again to retry', 'warn');
+                } else if (pointerLockAttempts === 2) {
+                    showToast('Still cannot capture mouse - check browser permissions', 'error');
+                    log('Firefox on Linux may block pointer lock. Check about:config for full-screen-api.allow-trusted-requests-only', 'warn');
+                } else {
+                    showToast('Mouse capture blocked by browser - see debug console', 'error');
+                }
+            }, false);
+
+            document.addEventListener('mozpointerlockerror', function (e) {
+                log('Mozilla-specific pointer lock error. This may be a Firefox permission issue.', 'error');
+            }, false);
+
+            document.addEventListener('webkitpointerlockerror', function (e) {
+                log('WebKit-specific pointer lock error.', 'error');
             }, false);
 
             /* Clicking the overlay requests pointer lock */
             if (clickOverlay) {
-                clickOverlay.addEventListener('click', function () {
-                    if (emulatorReady && screenContainer) {
-                        screenContainer.requestPointerLock =
-                            screenContainer.requestPointerLock ||
-                            screenContainer.mozRequestPointerLock ||
-                            screenContainer.webkitRequestPointerLock;
+                clickOverlay.addEventListener('click', function (e) {
+                    if (!emulatorReady) {
+                        log('Cannot request pointer lock - emulator not ready yet.', 'warn');
+                        return;
+                    }
 
-                        if (screenContainer.requestPointerLock) {
-                            screenContainer.requestPointerLock();
+                    if (!screenContainer) {
+                        log('Cannot request pointer lock - screen container not found.', 'error');
+                        return;
+                    }
+
+                    var now = Date.now();
+                    if (now - lastAttemptTime < 500) {
+                        log('Pointer lock request throttled - wait a moment between clicks.', 'warn');
+                        return;
+                    }
+                    lastAttemptTime = now;
+
+                    /* Try to get the canvas element directly for better compatibility */
+                    var canvas = screenContainer.querySelector('canvas');
+                    var targetElement = canvas || screenContainer;
+
+                    log('Requesting pointer lock on ' + (canvas ? 'canvas' : 'container') + '...', 'info');
+
+                    /* Normalize the requestPointerLock method */
+                    targetElement.requestPointerLock =
+                        targetElement.requestPointerLock ||
+                        targetElement.mozRequestPointerLock ||
+                        targetElement.webkitRequestPointerLock;
+
+                    if (targetElement.requestPointerLock) {
+                        try {
+                            /* Call with empty options for better compatibility */
+                            var promise = targetElement.requestPointerLock();
+
+                            /* Modern browsers return a promise */
+                            if (promise && promise.then) {
+                                promise.then(function () {
+                                    log('Pointer lock promise resolved.', 'success');
+                                }).catch(function (err) {
+                                    log('Pointer lock promise rejected: ' + err.message, 'error');
+                                    showToast('Browser denied mouse capture: ' + err.message, 'error');
+                                });
+                            }
+                        } catch (err) {
+                            log('Exception requesting pointer lock: ' + err.message, 'error');
+                            showToast('Failed to request mouse capture: ' + err.message, 'error');
                         }
+                    } else {
+                        log('Pointer Lock API not supported by this browser.', 'error');
+                        showToast('Your browser does not support mouse capture', 'error');
                     }
                 });
             }
+
+            /* Also try to lock on canvas click directly */
+            screenContainer.addEventListener('click', function (e) {
+                if (isPointerLocked || !emulatorReady) return;
+
+                var canvas = screenContainer.querySelector('canvas');
+                if (canvas && e.target === canvas) {
+                    log('Direct canvas click detected, requesting pointer lock...', 'info');
+                    var targetElement = canvas;
+
+                    targetElement.requestPointerLock =
+                        targetElement.requestPointerLock ||
+                        targetElement.mozRequestPointerLock ||
+                        targetElement.webkitRequestPointerLock;
+
+                    if (targetElement.requestPointerLock) {
+                        try {
+                            targetElement.requestPointerLock();
+                        } catch (err) {
+                            log('Canvas click pointer lock failed: ' + err.message, 'warn');
+                        }
+                    }
+                }
+            }, false);
         })();
 
         document.addEventListener('keydown', function (e) {
@@ -2313,6 +2400,16 @@ make all</code>
 
         window.onload = function () {
             log('Page loaded. Starting initialization...');
+
+            /* Detect browser and OS for pointer lock compatibility warnings */
+            var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            var isLinux = navigator.platform.toLowerCase().indexOf('linux') > -1;
+
+            if (isFirefox && isLinux) {
+                log('Firefox on Linux detected. Pointer lock may require additional permissions.', 'warn');
+                log('If mouse capture fails, check Firefox settings: about:config -> full-screen-api.allow-trusted-requests-only', 'info');
+                showToast('Firefox on Linux detected - mouse capture may need extra clicks', 'info');
+            }
 
             /* Hide click-to-focus until emulator is ready */
             hideClickToFocus();
