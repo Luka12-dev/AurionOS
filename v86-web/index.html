@@ -1832,7 +1832,8 @@
                         </svg>
                         <div class="click-to-focus-title">Click to take control</div>
                         <div class="click-to-focus-subtitle">Your mouse and keyboard will be captured by the VM. Press
-                            <strong>Esc</strong> to release.</div>
+                            <strong>Esc</strong> to release.
+                        </div>
                     </div>
 
                     <div class="screen-loading" id="screen_loading">
@@ -2096,21 +2097,6 @@ make all</code>
                     }
                 });
             }
-
-            /* Mouse sensitivity adjustment (75% = 0.75 multiplier) */
-            var mouseSensitivity = 0.75;
-            document.addEventListener('mousemove', function (e) {
-                if (isPointerLocked && emulatorInstance) {
-                    /* Scale mouse movement by sensitivity factor */
-                    var scaledX = e.movementX * mouseSensitivity;
-                    var scaledY = e.movementY * mouseSensitivity;
-
-                    /* Send scaled movement to emulator */
-                    if (emulatorInstance.mouse_set_position) {
-                        emulatorInstance.mouse_set_position(scaledX, scaledY);
-                    }
-                }
-            }, false);
         })();
 
         document.addEventListener('keydown', function (e) {
