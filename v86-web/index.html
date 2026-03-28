@@ -60,12 +60,7 @@
         }
 
         html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-
-        body {
-            background-color: var(--bg); color: var(--text); font-family: var(--font-sans);
-            min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; line-height: 1.6;
-        }
-
+        body { background-color: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; line-height: 1.6; }
         ::selection { background: var(--accent); color: #000; }
         :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -85,15 +80,9 @@
         @keyframes floatUp { 0% { opacity: 0; transform: translateY(30px); } 60% { opacity: 1; } 100% { transform: translateY(0); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(8px); } }
 
-        .topbar {
-            width: 100%; display: flex; align-items: center; justify-content: space-between;
-            padding: var(--space-md) var(--space-lg); position: fixed; top: 0; left: 0; z-index: 200;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.7) 75%, transparent);
-            pointer-events: none; transition: background var(--transition-slow);
-        }
+        .topbar { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) var(--space-lg); position: fixed; top: 0; left: 0; z-index: 200; background: linear-gradient(to bottom, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.7) 75%, transparent); pointer-events: none; transition: background var(--transition-slow); }
         .topbar > * { pointer-events: auto; }
         .topbar.scrolled { background: rgba(0,0,0,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
-
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); transition: opacity var(--transition); }
         .brand:hover { opacity: 0.85; }
         .brand-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); object-fit: contain; transition: transform var(--transition); }
@@ -101,7 +90,6 @@
         .brand-text { display: flex; flex-direction: column; gap: 1px; }
         .brand-name { font-size: var(--font-size-sm); font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text); line-height: 1; }
         .brand-tagline { font-size: 0.6em; color: var(--text-dim); letter-spacing: 0.5px; font-weight: 400; }
-
         .nav-links { display: flex; align-items: center; gap: var(--space-sm); }
         .nav-link { display: flex; align-items: center; gap: 7px; text-decoration: none; color: var(--text-dim); font-size: 0.82em; font-weight: 500; padding: 7px 14px; border: 1px solid transparent; border-radius: var(--radius); transition: all var(--transition); background: transparent; cursor: pointer; white-space: nowrap; font-family: var(--font-sans); }
         .nav-link:hover { color: var(--text); background: var(--surface); border-color: var(--border); }
@@ -128,32 +116,23 @@
         .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(212,149,42,0.2); }
         .btn-primary:active { transform: translateY(0); box-shadow: none; }
         .btn-primary svg { width: 16px; height: 16px; }
-
         .btn-ghost { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 10px 20px; font-size: 0.85em; font-weight: 500; border-radius: var(--radius); cursor: pointer; transition: all var(--transition); text-decoration: none; font-family: var(--font-sans); }
         .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); background: var(--surface-hover); }
         .btn-ghost svg { width: 14px; height: 14px; }
 
-        .mouse-lock-banner { position: fixed; top: var(--space-lg); left: 50%; transform: translateX(-50%) translateY(-60px); background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border-hover); border-radius: var(--radius-md); padding: 10px 20px; display: flex; align-items: center; gap: var(--space-sm); z-index: 600; opacity: 0; pointer-events: none; transition: all 0.3s ease-out; box-shadow: var(--shadow-lg); }
-        .mouse-lock-banner.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-        .mouse-lock-banner .lock-icon { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
-        .mouse-lock-banner .lock-text { font-size: 0.82em; color: var(--text-secondary); white-space: nowrap; }
-        .mouse-lock-banner kbd { display: inline-block; background: var(--surface); border: 1px solid var(--border-active); padding: 2px 8px; border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.9em; font-weight: 600; color: var(--text); margin: 0 2px; }
-
-        /*
-         * CURSOR HIDING:
-         * - pointer-locked class: added when pointer lock is active (belt)
-         * - vm-focused class: added on click even if pointer lock fails (suspenders)
-         * Both set cursor: none on everything relevant.
-         */
-        body.pointer-locked,
-        body.pointer-locked * {
-            cursor: none !important;
+        /* Info banner shown when interacting with VM */
+        .vm-active-banner {
+            position: fixed; top: var(--space-lg); left: 50%;
+            transform: translateX(-50%) translateY(-60px);
+            background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+            border: 1px solid var(--border-hover); border-radius: var(--radius-md);
+            padding: 10px 20px; display: flex; align-items: center; gap: var(--space-sm);
+            z-index: 600; opacity: 0; pointer-events: none;
+            transition: all 0.3s ease-out; box-shadow: var(--shadow-lg);
         }
-
-        body.vm-focused #screen_container,
-        body.vm-focused #screen_container * {
-            cursor: none !important;
-        }
+        .vm-active-banner.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        .vm-active-banner svg { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+        .vm-active-banner span { font-size: 0.82em; color: var(--text-secondary); white-space: nowrap; }
 
         .main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 80px var(--space-lg) var(--space-2xl); width: 100%; margin: 0 auto; }
 
@@ -184,16 +163,22 @@
         #screen_container canvas { display: block; }
 
         /*
-         * CLICK-TO-FOCUS: pointer-events: none
-         * Purely visual. Clicks pass through to the canvas.
-         * We hide it via JS when the user clicks the canvas.
+         * THE CURSOR FIX:
+         * When the emulator is running, hide the host cursor over the
+         * canvas area. V86 draws its own cursor via the guest OS.
+         * No pointer lock needed — just CSS cursor:none.
          */
+        .screen-wrapper.running #screen_container {
+            cursor: none;
+        }
+
+        /* Click-to-focus overlay: pointer-events:none so clicks pass through */
         .click-to-focus {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 8; display: flex; flex-direction: column; align-items: center;
             justify-content: center; gap: var(--space-md);
             background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(2px);
-            transition: opacity 0.25s ease-out; border-radius: var(--radius-md);
+            transition: opacity 0.3s ease-out; border-radius: var(--radius-md);
             pointer-events: none;
         }
         .click-to-focus.hidden { opacity: 0; }
@@ -209,7 +194,6 @@
         .loading-progress-bar { height: 100%; background: var(--accent); border-radius: 1px; width: 0%; transition: width 0.3s ease-out; }
         .loading-progress-bar.indeterminate { width: 30%; animation: shimmer 1.5s ease-in-out infinite; background: linear-gradient(90deg, transparent, var(--accent), transparent); background-size: 200% 100%; }
 
-        /* Toolbar: container is pointer-events:none, buttons are auto */
         .screen-toolbar { position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: linear-gradient(to top, rgba(0,0,0,0.9) 40%, transparent); opacity: 0; transition: opacity 0.3s ease-out; z-index: 10; pointer-events: none; }
         .screen-toolbar > * { pointer-events: auto; }
         .screen-wrapper:hover .screen-toolbar { opacity: 1; }
@@ -355,9 +339,10 @@
         </nav>
     </header>
 
-    <div class="mouse-lock-banner" id="mouse_lock_banner">
-        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        <span class="lock-text">Mouse captured — press <kbd>Esc</kbd> to release</span>
+    <!-- Simplified banner: no pointer lock, just a hint -->
+    <div class="vm-active-banner" id="vm_active_banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <span>Interacting with AurionOS — click outside the screen to deselect</span>
     </div>
 
     <div id="startup_overlay">
@@ -381,12 +366,11 @@
     <div class="shortcuts-overlay" id="shortcuts_overlay" onclick="hideShortcuts(event)">
         <div class="shortcuts-card" onclick="event.stopPropagation()">
             <h3>Keyboard shortcuts</h3>
-            <div class="shortcut-row"><span class="shortcut-action">Click screen to take control</span><div class="shortcut-keys"><kbd>Click</kbd></div></div>
-            <div class="shortcut-row"><span class="shortcut-action">Release mouse from emulator</span><div class="shortcut-keys"><kbd>Esc</kbd></div></div>
+            <div class="shortcut-row"><span class="shortcut-action">Interact with VM</span><div class="shortcut-keys"><kbd>Click screen</kbd></div></div>
+            <div class="shortcut-row"><span class="shortcut-action">Release keyboard</span><div class="shortcut-keys"><kbd>Click outside</kbd></div></div>
             <div class="shortcut-row"><span class="shortcut-action">Toggle fullscreen</span><div class="shortcut-keys"><kbd>F11</kbd></div></div>
             <div class="shortcut-row"><span class="shortcut-action">Toggle debug console</span><div class="shortcut-keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>`</kbd></div></div>
             <div class="shortcut-row"><span class="shortcut-action">Show this dialog</span><div class="shortcut-keys"><kbd>?</kbd></div></div>
-            <div class="shortcut-row"><span class="shortcut-action">Scroll to emulator</span><div class="shortcut-keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Enter</kbd></div></div>
         </div>
     </div>
 
@@ -416,7 +400,7 @@
                     <div class="click-to-focus" id="click_to_focus">
                         <svg class="click-to-focus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5l13 9-7 2-2 7-4-18z"/></svg>
                         <div class="click-to-focus-title">Click to take control</div>
-                        <div class="click-to-focus-subtitle">Your mouse and keyboard will be captured by the VM. Press <strong>Esc</strong> to release.</div>
+                        <div class="click-to-focus-subtitle">Your keyboard will be captured. Click outside the screen to release.</div>
                     </div>
 
                     <div class="screen-loading" id="screen_loading">
@@ -428,9 +412,9 @@
                     <div class="screen-toolbar">
                         <div class="toolbar-left"><div class="toolbar-status" id="toolbar_status"><div class="mini-dot" id="toolbar_dot"></div><span id="toolbar_status_text">Waiting to start...</span></div></div>
                         <div class="toolbar-right">
-                            <button class="toolbar-btn" onclick="restartEmulator()" title="Restart emulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restart</button>
+                            <button class="toolbar-btn" onclick="restartEmulator()" title="Restart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restart</button>
                             <div class="toolbar-divider"></div>
-                            <button class="toolbar-btn" onclick="toggleFullscreen()" id="fullscreen_btn" title="Toggle fullscreen (F11)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg><span id="fullscreen_label">Fullscreen</span></button>
+                            <button class="toolbar-btn" onclick="toggleFullscreen()" id="fullscreen_btn" title="Fullscreen (F11)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg><span id="fullscreen_label">Fullscreen</span></button>
                         </div>
                     </div>
                 </div>
@@ -438,7 +422,7 @@
 
             <div class="status-area">
                 <div class="status-left"><div class="status-indicator"><div class="status-dot loading" id="status_dot"></div><div class="status-ring" id="status_ring"></div></div><span id="status">Initializing emulator...</span></div>
-                <div class="status-right"><span class="hint-text" id="hint_text">Click the screen to take control — press <kbd>Esc</kbd> to release</span></div>
+                <div class="status-right"><span class="hint-text" id="hint_text">Click the screen to interact — click outside to release keyboard</span></div>
             </div>
 
             <div id="file_selector">
@@ -447,7 +431,7 @@
                     <div class="drop-zone-title">Drop your ISO file here</div>
                     <div class="drop-zone-subtitle">or click to browse</div>
                     <div class="drop-zone-btn">Select file</div>
-                    <input type="file" id="iso_file" accept=".iso" title="Select AurionOS ISO file">
+                    <input type="file" id="iso_file" accept=".iso">
                 </div>
             </div>
         </section>
@@ -489,11 +473,36 @@ make all</code></div>
     </footer>
 
     <script>
+        /*
+         * ==============================================================
+         * HOW THE MOUSE FIX WORKS
+         * ==============================================================
+         *
+         * V86 uses ABSOLUTE mouse mode (like a USB tablet). It tracks
+         * offsetX/offsetY on the canvas to position the guest cursor.
+         * This works on every OS (Linux, Windows, macOS) in every browser.
+         *
+         * requestPointerLock() BREAKS this because it switches the
+         * browser to RELATIVE mode (movementX/movementY only, no
+         * offsetX/offsetY). V86's absolute tracking gets nothing → frozen.
+         *
+         * Solution: NEVER use pointer lock. Just hide the host cursor
+         * with CSS cursor:none on #screen_container. V86 keeps working
+         * in absolute mode. Only the AurionOS cursor is visible.
+         *
+         * cursor:none only applies when the mouse is over #screen_container.
+         * When the mouse moves off the canvas to the rest of the page,
+         * the normal cursor appears automatically. No state management needed.
+         *
+         * Keyboard: clicking the canvas gives it focus, so v86 receives
+         * keyboard events. Clicking outside the canvas removes focus.
+         * ==============================================================
+         */
+
         var emulatorInstance = null;
-        var isPointerLocked = false;
         var isFullscreen = false;
         var emulatorReady = false;
-        var vmFocused = false;
+        var vmActive = false; /* true when user has clicked the screen */
 
         function getEmulatorCanvas() {
             var c = document.getElementById('screen_container');
@@ -528,8 +537,8 @@ make all</code></div>
             var w = document.getElementById('screen_wrapper');
             isFullscreen = !isFullscreen;
             w.classList.toggle('fullscreen', isFullscreen);
-            document.getElementById('fullscreen_label').textContent = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
-            if (isFullscreen) showToast('Press Esc or F11 to exit fullscreen', 'info');
+            document.getElementById('fullscreen_label').textContent = isFullscreen ? 'Exit' : 'Fullscreen';
+            if (isFullscreen) showToast('Press F11 to exit fullscreen', 'info');
         }
 
         function showClickToFocus() {
@@ -542,131 +551,88 @@ make all</code></div>
         }
 
         /*
-         * Focus/unfocus the VM.
-         * "Focus" means: overlay hidden, cursor hidden, pointer locked.
-         * "Unfocus" means: overlay shown, cursor visible, pointer unlocked.
+         * VM ACTIVATION
+         * Click screen → hide overlay, show banner, focus canvas
+         * Click outside → show overlay, hide banner
          */
-        function focusVM() {
-            if (vmFocused) return;
-            vmFocused = true;
+        function activateVM() {
+            if (vmActive) return;
+            vmActive = true;
             hideClickToFocus();
-            document.body.classList.add('vm-focused');
+            document.getElementById('vm_active_banner').classList.add('visible');
 
-            /* Request pointer lock on the canvas */
+            /* Focus the canvas so v86 receives keyboard input */
             var canvas = getEmulatorCanvas();
             if (canvas) {
-                var req = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-                if (req) {
-                    try { req.call(canvas); }
-                    catch (e) { log('Pointer lock request failed: ' + e.message, 'warn'); }
-                }
+                if (!canvas.hasAttribute('tabindex')) canvas.setAttribute('tabindex', '0');
+                canvas.focus();
             }
-
-            log('VM focused — cursor hidden, pointer lock requested');
+            log('VM activated — keyboard captured, host cursor hidden over screen');
         }
 
-        function unfocusVM() {
-            vmFocused = false;
-            document.body.classList.remove('vm-focused');
-            document.body.classList.remove('pointer-locked');
+        function deactivateVM() {
+            if (!vmActive) return;
+            vmActive = false;
             if (emulatorReady) showClickToFocus();
-            log('VM unfocused — overlay shown');
+            document.getElementById('vm_active_banner').classList.remove('visible');
+
+            /* Blur the canvas so keyboard goes back to page */
+            var canvas = getEmulatorCanvas();
+            if (canvas) canvas.blur();
+            log('VM deactivated — overlay shown');
         }
 
         /*
-         * POINTER LOCK: watch for changes.
-         * When locked → hide cursor (browser does it) + add class.
-         * When unlocked → show overlay + remove class.
-         */
-        (function () {
-            var banner = document.getElementById('mouse_lock_banner');
-
-            function onPointerLockChange() {
-                var lockEl = document.pointerLockElement || document.mozPointerLockElement;
-                var canvas = getEmulatorCanvas();
-                var container = document.getElementById('screen_container');
-                var locked = lockEl && (lockEl === canvas || lockEl === container);
-
-                isPointerLocked = !!locked;
-
-                if (locked) {
-                    document.body.classList.add('pointer-locked');
-                    banner.classList.add('visible');
-                    hideClickToFocus();
-                    vmFocused = true;
-                    log('Pointer LOCKED');
-                } else {
-                    document.body.classList.remove('pointer-locked');
-                    banner.classList.remove('visible');
-                    /* Only unfocus if we were previously focused */
-                    if (vmFocused) {
-                        unfocusVM();
-                    }
-                    log('Pointer UNLOCKED');
-                }
-            }
-
-            document.addEventListener('pointerlockchange', onPointerLockChange, false);
-            document.addEventListener('mozpointerlockchange', onPointerLockChange, false);
-
-            document.addEventListener('pointerlockerror', function () {
-                log('Pointer lock denied — using cursor:none fallback', 'warn');
-                /*
-                 * Pointer lock failed, but we still hide the cursor via CSS.
-                 * The vm-focused class on body triggers cursor:none on #screen_container.
-                 * V86 still works in absolute mouse mode.
-                 */
-            }, false);
-            document.addEventListener('mozpointerlockerror', function () {
-                log('Pointer lock denied (Firefox) — using cursor:none fallback', 'warn');
-            }, false);
-        })();
-
-        /*
-         * CANVAS CLICK HANDLER:
-         * Attached to screen_container so it catches clicks on the canvas
-         * (the overlay has pointer-events:none so clicks pass through).
-         *
-         * On mousedown:
-         * 1. Hide the overlay immediately
-         * 2. Hide the host cursor (via vm-focused class)
-         * 3. Request pointer lock on the canvas
-         *
-         * This is a REAL user gesture so requestPointerLock() will work
-         * on all browsers including Firefox on Linux.
+         * CLICK HANDLERS
+         * mousedown on screen_container → activate
+         * mousedown on anything OUTSIDE screen_wrapper → deactivate
          */
         (function () {
             var sc = document.getElementById('screen_container');
+            var wrapper = document.getElementById('screen_wrapper');
 
-            sc.addEventListener('mousedown', function (e) {
-                if (!emulatorReady) return;
-                if (isPointerLocked) return; /* Already locked */
-
-                /* Focus the VM: hide overlay + cursor, lock pointer */
-                focusVM();
+            /* Click inside the emulator screen → activate */
+            sc.addEventListener('mousedown', function () {
+                if (emulatorReady) activateVM();
             });
+
+            /* Click anywhere on the document */
+            document.addEventListener('mousedown', function (e) {
+                if (!vmActive) return;
+                /* If click is outside the screen wrapper, deactivate */
+                if (!wrapper.contains(e.target)) {
+                    deactivateVM();
+                }
+            });
+
+            /*
+             * Prevent right-click context menu on canvas
+             * (would be confusing inside the VM)
+             */
+            sc.addEventListener('contextmenu', function (e) {
+                if (emulatorReady) e.preventDefault();
+            });
+
+            /*
+             * Prevent page scroll when scrolling inside the emulator
+             * (mouse wheel should go to the VM, not scroll the page)
+             */
+            sc.addEventListener('wheel', function (e) {
+                if (emulatorReady) e.preventDefault();
+            }, { passive: false });
         })();
 
-        /*
-         * Click OUTSIDE the emulator → unfocus VM (if pointer lock is not active).
-         * If pointer lock IS active, Esc is the only way to release.
-         */
-        document.addEventListener('mousedown', function (e) {
-            if (!vmFocused) return;
-            if (isPointerLocked) return; /* Esc handles this */
-
-            /* Check if click is inside screen_container */
-            var sc = document.getElementById('screen_container');
-            if (sc && !sc.contains(e.target)) {
-                unfocusVM();
-            }
-        });
-
+        /* Keyboard shortcuts — only when VM is NOT active */
         document.addEventListener('keydown', function (e) {
-            if (isPointerLocked) return;
+            /* When VM is active, let v86 handle all keys */
+            var canvas = getEmulatorCanvas();
+            if (canvas && document.activeElement === canvas) {
+                /* Only intercept F11 for our fullscreen toggle */
+                if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
+                return;
+            }
 
             if (e.key === 'Escape') {
-                if (vmFocused) unfocusVM();
                 if (isFullscreen) toggleFullscreen();
                 document.getElementById('shortcuts_overlay').classList.remove('visible');
             }
@@ -721,7 +687,8 @@ make all</code></div>
             console.log('[V86] [' + level + ']', msg);
             var d = document.getElementById('debug_log'); if (!d) return;
             var e = document.createElement('div'); e.className = 'log-entry';
-            var ts = document.createElement('span'); ts.className = 'log-time'; ts.textContent = '[' + new Date().toLocaleTimeString() + '] '; e.appendChild(ts);
+            var ts = document.createElement('span'); ts.className = 'log-time';
+            ts.textContent = '[' + new Date().toLocaleTimeString() + '] '; e.appendChild(ts);
             var ms = document.createElement('span');
             if (level === 'error') ms.className = 'log-error';
             else if (level === 'success') ms.className = 'log-success';
@@ -796,13 +763,13 @@ make all</code></div>
                     var canvas = getEmulatorCanvas();
                     if (canvas) {
                         log('Canvas: ' + canvas.width + 'x' + canvas.height, 'success');
-                        if (!canvas.hasAttribute('tabindex')) canvas.setAttribute('tabindex', '0');
+                        canvas.setAttribute('tabindex', '0');
                     } else {
                         log('No canvas found!', 'error');
                     }
 
-                    log('Ready. Click the screen to take control.', 'success');
-                    showToast('AurionOS is running — click the screen', 'success');
+                    log('Ready. Host cursor hidden over screen via CSS.', 'success');
+                    showToast('AurionOS is running — click the screen to interact', 'success');
                     showClickToFocus();
                 });
 
@@ -811,9 +778,10 @@ make all</code></div>
                     setStatus('Stopped.', 'error');
                     log('Stopped.', 'warn');
                     hideClickToFocus();
-                    unfocusVM();
+                    deactivateVM();
                 });
 
+                /* Keep canvas visible */
                 var sc = document.getElementById('screen_container');
                 var obs = new MutationObserver(function (muts) {
                     muts.forEach(function (m) {
