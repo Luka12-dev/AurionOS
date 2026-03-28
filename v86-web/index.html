@@ -1,2579 +1,1072 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AurionOS - Try it in your browser</title>
-    <link rel="icon" type="image/png" href="AurionOS.png">
-    <style>
-        /* Reset */
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg: #000000;
-            --bg-raised: #060606;
-            --surface: #0a0a0a;
-            --surface-hover: #0f0f0f;
-            --border: #1a1a1a;
-            --border-hover: #2a2a2a;
-            --border-active: #3a3a3a;
-            --text: #e8e4de;
-            --text-secondary: #b0a999;
-            --text-dim: #777069;
-            --text-faint: #4a453e;
-            --accent: #d4952a;
-            --accent-hover: #e0a435;
-            --accent-glow: rgba(212, 149, 42, 0.08);
-            --accent-glow-strong: rgba(212, 149, 42, 0.15);
-            --error: #c44040;
-            --error-dim: rgba(196, 64, 64, 0.15);
-            --success: #4a9e5a;
-            --success-dim: rgba(74, 158, 90, 0.15);
-            --warning: #c49340;
-            --info: #4a7e9e;
-            --space-xs: 4px;
-            --space-sm: 8px;
-            --space-md: 16px;
-            --space-lg: 24px;
-            --space-xl: 32px;
-            --space-2xl: 48px;
-            --space-3xl: 64px;
-            --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-            --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
-            --font-size-xs: 0.7em;
-            --font-size-sm: 0.8em;
-            --font-size-base: 0.9em;
-            --font-size-md: 1em;
-            --font-size-lg: 1.2em;
-            --font-size-xl: 1.5em;
-            --font-size-2xl: 2em;
-            --font-size-3xl: 2.8em;
-            --radius-sm: 4px;
-            --radius: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --radius-xl: 16px;
-            --radius-full: 9999px;
-            --transition-fast: 120ms ease-out;
-            --transition: 200ms ease-out;
-            --transition-slow: 350ms ease-out;
-            --transition-bounce: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
-            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.7);
-            --shadow-glow: 0 0 40px var(--accent-glow);
-        }
-
-        html {
-            scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font-sans);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        ::selection {
-            background: var(--accent);
-            color: #000;
-        }
-
-        :focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--border-hover);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes cardIn {
-            from {
-                opacity: 0;
-                transform: translateY(16px) scale(0.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes pulseDot {
-
-            0%,
-            100% {
-                opacity: 0.4;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        @keyframes pulseRing {
-            0% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-
-            100% {
-                transform: scale(2.2);
-                opacity: 0;
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-
-            100% {
-                background-position: 200% 0;
-            }
-        }
-
-        @keyframes subtleFloat {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-4px);
-            }
-        }
-
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            60% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-        }
-
-        /* Top bar */
-        .topbar {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: var(--space-md) var(--space-lg);
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 200;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 40%, rgba(0, 0, 0, 0.7) 75%, transparent);
-            pointer-events: none;
-            transition: background var(--transition-slow);
-        }
-
-        .topbar>* {
-            pointer-events: auto;
-        }
-
-        .topbar.scrolled {
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: var(--text);
-            transition: opacity var(--transition);
-        }
-
-        .brand:hover {
-            opacity: 0.85;
-        }
-
-        .brand-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
-            object-fit: contain;
-            transition: transform var(--transition);
-        }
-
-        .brand:hover .brand-icon {
-            transform: scale(1.05);
-        }
-
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .brand-name {
-            font-size: var(--font-size-sm);
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: var(--text);
-            line-height: 1;
-        }
-
-        .brand-tagline {
-            font-size: 0.6em;
-            color: var(--text-dim);
-            letter-spacing: 0.5px;
-            font-weight: 400;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            text-decoration: none;
-            color: var(--text-dim);
-            font-size: 0.82em;
-            font-weight: 500;
-            padding: 7px 14px;
-            border: 1px solid transparent;
-            border-radius: var(--radius);
-            transition: all var(--transition);
-            background: transparent;
-            cursor: pointer;
-            white-space: nowrap;
-            font-family: var(--font-sans);
-        }
-
-        .nav-link:hover {
-            color: var(--text);
-            background: var(--surface);
-            border-color: var(--border);
-        }
-
-        .nav-link svg {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }
-
-        .nav-link.github-link {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: var(--border);
-        }
-
-        .nav-link.github-link:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--border-hover);
-        }
-
-        .nav-link.github-link svg {
-            fill: currentColor;
-        }
-
-        .nav-separator {
-            width: 1px;
-            height: 20px;
-            background: var(--border);
-            margin: 0 var(--space-xs);
-        }
-
-        /* Startup overlay */
-        #startup_overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(20px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 1;
-            transition: opacity 0.4s ease-out;
-            padding: var(--space-lg);
-        }
-
-        #startup_overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .startup-card {
-            max-width: 500px;
-            width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-2xl);
-            animation: cardIn 0.5s ease-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .startup-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0.5;
-        }
-
-        .startup-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            margin-bottom: var(--space-lg);
-        }
-
-        .startup-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-md);
-            object-fit: contain;
-        }
-
-        .startup-card h2 {
-            font-size: var(--font-size-xl);
-            font-weight: 600;
-            color: var(--text);
-            line-height: 1.2;
-        }
-
-        .startup-card p {
-            font-size: var(--font-size-base);
-            color: var(--text-dim);
-            line-height: 1.75;
-            margin-bottom: var(--space-md);
-        }
-
-        .startup-card p strong {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .startup-note {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-sm);
-            padding: var(--space-md);
-            background: var(--accent-glow);
-            border: 1px solid rgba(212, 149, 42, 0.12);
-            border-radius: var(--radius);
-            margin-bottom: var(--space-lg);
-            font-size: 0.82em;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .startup-note svg {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
-            margin-top: 2px;
-            color: var(--accent);
-        }
-
-        .startup-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            margin-top: var(--space-lg);
-        }
-
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-sm);
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 12px 28px;
-            font-size: var(--font-size-base);
-            font-weight: 600;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all var(--transition);
-            letter-spacing: 0.3px;
-            font-family: var(--font-sans);
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(212, 149, 42, 0.2);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-            box-shadow: none;
-        }
-
-        .btn-primary svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .btn-ghost {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            color: var(--text-dim);
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            font-size: 0.85em;
-            font-weight: 500;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all var(--transition);
-            text-decoration: none;
-            font-family: var(--font-sans);
-        }
-
-        .btn-ghost:hover {
-            color: var(--text);
-            border-color: var(--border-hover);
-            background: var(--surface-hover);
-        }
-
-        .btn-ghost svg {
-            width: 14px;
-            height: 14px;
-        }
-
-        /* Mouse lock banner */
-        .mouse-lock-banner {
-            position: fixed;
-            top: var(--space-lg);
-            left: 50%;
-            transform: translateX(-50%) translateY(-60px);
-            background: rgba(10, 10, 10, 0.92);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-hover);
-            border-radius: var(--radius-md);
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            z-index: 600;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease-out;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .mouse-lock-banner.visible {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-
-        .mouse-lock-banner .lock-icon {
-            width: 18px;
-            height: 18px;
-            color: var(--accent);
-            flex-shrink: 0;
-        }
-
-        .mouse-lock-banner .lock-text {
-            font-size: 0.82em;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-
-        .mouse-lock-banner kbd {
-            display: inline-block;
-            background: var(--surface);
-            border: 1px solid var(--border-active);
-            padding: 2px 8px;
-            border-radius: var(--radius-sm);
-            font-family: var(--font-sans);
-            font-size: 0.9em;
-            font-weight: 600;
-            color: var(--text);
-            margin: 0 2px;
-        }
-
-        /* Hide host cursor when pointer is locked */
-        body.pointer-locked,
-        body.pointer-locked * {
-            cursor: none !important;
-        }
-
-        /* Main content */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 80px var(--space-lg) var(--space-2xl);
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        /* Hero */
-        .hero {
-            text-align: center;
-            padding: var(--space-3xl) 0 var(--space-xl);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 14px;
-            background: var(--accent-glow);
-            border: 1px solid rgba(212, 149, 42, 0.15);
-            border-radius: var(--radius-full);
-            font-size: 0.72em;
-            font-weight: 600;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: var(--space-md);
-            animation: floatUp 0.6s ease-out forwards;
-        }
-
-        .hero-badge .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent);
-            animation: pulseDot 2s ease-in-out infinite;
-        }
-
-        .hero h1 {
-            font-size: var(--font-size-3xl);
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            line-height: 1.15;
-            margin-bottom: var(--space-md);
-            animation: floatUp 0.6s ease-out 0.1s both;
-        }
-
-        .hero h1 .accent {
-            color: var(--accent);
-        }
-
-        .hero-subtitle {
-            font-size: var(--font-size-md);
-            color: var(--text-dim);
-            line-height: 1.7;
-            animation: floatUp 0.6s ease-out 0.2s both;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-
-        .hero-actions {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-md);
-            margin-top: var(--space-xl);
-            animation: floatUp 0.6s ease-out 0.3s both;
-        }
-
-        .scroll-indicator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-sm);
-            margin-top: var(--space-2xl);
-            animation: floatUp 0.6s ease-out 0.4s both;
-        }
-
-        .scroll-indicator span {
-            font-size: 0.7em;
-            color: var(--text-faint);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .scroll-arrow {
-            width: 20px;
-            height: 20px;
-            color: var(--text-faint);
-            animation: subtleFloat 2s ease-in-out infinite;
-        }
-
-        /* Emulator section */
-        .emulator-section {
-            width: 100%;
-            max-width: 1400px;
-            scroll-margin-top: 80px;
-        }
-
-        .section-label {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-md);
-            font-size: 0.75em;
-            color: var(--text-faint);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
-
-        .section-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        .emulator-section .section-label {
-            margin-left: calc(-1 * var(--space-lg));
-            margin-right: calc(-1 * var(--space-lg));
-            margin-bottom: var(--space-md);
-        }
-
-        .emulator-screen-center {
-            display: flex;
-            justify-content: center;
-            margin-left: calc(-1 * var(--space-lg));
-            margin-right: calc(-1 * var(--space-lg));
-        }
-
-        /*
-         * Screen wrapper: shrink-wraps the canvas.
-         * Position relative so the click overlay,
-         * loading screen and toolbar can sit on top.
-         */
-        .screen-wrapper {
-            position: relative;
-            display: inline-block;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            background: #000;
-            box-shadow: var(--shadow-xl);
-            transition: box-shadow 0.5s ease-out, border-color 0.4s ease-out;
-            line-height: 0;
-        }
-
-        .screen-wrapper:hover {
-            border-color: var(--border-hover);
-        }
-
-        .screen-wrapper.running {
-            box-shadow:
-                0 0 0 1px rgba(212, 149, 42, 0.04),
-                var(--shadow-glow),
-                var(--shadow-xl);
-        }
-
-        /* Fullscreen mode */
-        .screen-wrapper.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            border-radius: 0;
-            border: none;
-            z-index: 500;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .screen-wrapper.fullscreen #screen_container canvas {
-            display: block;
-        }
-
-        /* Screen container - v86 renders here, no forced sizing */
-        #screen_container {
-            background: #000;
-        }
-
-        #screen_container canvas {
-            display: block;
-        }
-
-        /*
-         * Click-to-focus overlay: sits on top of the canvas
-         * when the emulator is not focused. Blocks scroll
-         * events from reaching the terminal. Clicking it
-         * requests pointer lock and gives control to the VM.
-         * Hidden once pointer is locked.
-         */
-        .click-to-focus {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-md);
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(2px);
-            cursor: pointer;
-            transition: opacity 0.25s ease-out, backdrop-filter 0.25s ease-out;
-            border-radius: var(--radius-md);
-        }
-
-        .click-to-focus:hover {
-            background: rgba(0, 0, 0, 0.45);
-        }
-
-        .click-to-focus.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .click-to-focus-icon {
-            width: 48px;
-            height: 48px;
-            color: var(--accent);
-            opacity: 0.9;
-        }
-
-        .click-to-focus-title {
-            font-size: 1em;
-            font-weight: 600;
-            color: var(--text);
-            letter-spacing: 0.3px;
-        }
-
-        .click-to-focus-subtitle {
-            font-size: 0.78em;
-            color: var(--text-dim);
-            text-align: center;
-            max-width: 260px;
-            line-height: 1.5;
-        }
-
-        /* Loading state */
-        .screen-loading {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            min-width: 640px;
-            min-height: 480px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-lg);
-            background: #000;
-            z-index: 5;
-            transition: opacity 0.5s ease-out;
-        }
-
-        .screen-loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .screen-loading .loading-logo {
-            width: 56px;
-            height: 56px;
-            object-fit: contain;
-            animation: subtleFloat 3s ease-in-out infinite;
-        }
-
-        .screen-loading .loading-text {
-            font-size: 0.8em;
-            color: var(--text-dim);
-            text-align: center;
-        }
-
-        .loading-progress-container {
-            width: 200px;
-            height: 2px;
-            background: var(--border);
-            border-radius: 1px;
-            overflow: hidden;
-        }
-
-        .loading-progress-bar {
-            height: 100%;
-            background: var(--accent);
-            border-radius: 1px;
-            width: 0%;
-            transition: width 0.3s ease-out;
-        }
-
-        .loading-progress-bar.indeterminate {
-            width: 30%;
-            animation: shimmer 1.5s ease-in-out infinite;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            background-size: 200% 100%;
-        }
-
-        /* Screen toolbar */
-        .screen-toolbar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 40%, transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease-out;
-            z-index: 10;
-        }
-
-        .screen-wrapper:hover .screen-toolbar {
-            opacity: 1;
-        }
-
-        .screen-wrapper.fullscreen .screen-toolbar {
-            opacity: 1;
-            padding: 14px 20px;
-        }
-
-        .toolbar-left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .toolbar-status {
-            font-size: 0.73em;
-            color: var(--text-dim);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .toolbar-status .mini-dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--text-dim);
-        }
-
-        .toolbar-status .mini-dot.active {
-            background: var(--success);
-        }
-
-        .toolbar-right {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .toolbar-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-dim);
-            padding: 5px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 0.73em;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all var(--transition);
-            font-family: var(--font-sans);
-        }
-
-        .toolbar-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: var(--text);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .toolbar-btn:active {
-            transform: scale(0.97);
-        }
-
-        .toolbar-btn svg {
-            width: 13px;
-            height: 13px;
-        }
-
-        .toolbar-divider {
-            width: 1px;
-            height: 16px;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        /* Status area */
-        .status-area {
-            width: 100%;
-            max-width: 1400px;
-            margin-top: var(--space-md);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: var(--space-sm);
-        }
-
-        .status-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-indicator {
-            position: relative;
-            width: 8px;
-            height: 8px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-faint);
-            transition: background 0.4s ease-out;
-            position: relative;
-            z-index: 1;
-        }
-
-        .status-dot.loading {
-            background: var(--accent);
-            animation: pulseDot 1.5s ease-in-out infinite;
-        }
-
-        .status-dot.running {
-            background: var(--success);
-        }
-
-        .status-dot.error {
-            background: var(--error);
-        }
-
-        .status-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 8px;
-            height: 8px;
-            margin-top: -4px;
-            margin-left: -4px;
-            border-radius: 50%;
-            border: 1px solid var(--success);
-            opacity: 0;
-            animation: none;
-        }
-
-        .status-dot.running~.status-ring {
-            animation: pulseRing 2s ease-out infinite;
-        }
-
-        #status {
-            font-size: var(--font-size-sm);
-            color: var(--text-dim);
-            transition: color var(--transition);
-        }
-
-        .status-right {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .hint-text {
-            font-size: 0.75em;
-            color: var(--text-faint);
-            transition: opacity var(--transition);
-        }
-
-        .hint-text kbd {
-            display: inline-block;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 1px 7px;
-            border-radius: var(--radius-sm);
-            font-family: var(--font-sans);
-            font-size: 0.92em;
-            font-weight: 600;
-            color: var(--text-dim);
-            margin: 0 1px;
-        }
-
-        /* File selector */
-        #file_selector {
-            display: none;
-            margin-top: var(--space-md);
-            width: 100%;
-            max-width: 1400px;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        .drop-zone {
-            width: 100%;
-            padding: var(--space-xl) var(--space-lg);
-            border: 2px dashed var(--border);
-            border-radius: var(--radius-md);
-            background: var(--surface);
-            text-align: center;
-            transition: all var(--transition);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .drop-zone:hover,
-        .drop-zone.drag-over {
-            border-color: var(--accent);
-            background: var(--accent-glow);
-        }
-
-        .drop-zone.drag-over {
-            border-style: solid;
-        }
-
-        .drop-zone-icon {
-            width: 40px;
-            height: 40px;
-            color: var(--text-faint);
-            margin: 0 auto var(--space-md);
-            transition: color var(--transition);
-        }
-
-        .drop-zone:hover .drop-zone-icon {
-            color: var(--accent);
-        }
-
-        .drop-zone-title {
-            font-size: var(--font-size-base);
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xs);
-        }
-
-        .drop-zone-subtitle {
-            font-size: 0.78em;
-            color: var(--text-dim);
-            margin-bottom: var(--space-md);
-        }
-
-        .drop-zone input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .drop-zone-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 8px 20px;
-            border-radius: var(--radius);
-            font-size: 0.8em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background var(--transition);
-            pointer-events: none;
-        }
-
-        .drop-zone:hover .drop-zone-btn {
-            background: var(--accent-hover);
-        }
-
-        /* Features */
-        .features-section {
-            width: 100%;
-            max-width: 1400px;
-            margin-top: var(--space-3xl);
-            padding-top: var(--space-xl);
-            border-top: 1px solid var(--border);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-md);
-            margin-top: var(--space-lg);
-        }
-
-        .feature-card {
-            padding: var(--space-lg);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            transition: all var(--transition);
-        }
-
-        .feature-card:hover {
-            border-color: var(--border-hover);
-            background: var(--surface-hover);
-            transform: translateY(-2px);
-        }
-
-        .feature-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius);
-            background: var(--accent-glow);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: var(--space-md);
-            color: var(--accent);
-            transition: background var(--transition);
-        }
-
-        .feature-card:hover .feature-icon {
-            background: var(--accent-glow-strong);
-        }
-
-        .feature-icon svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .feature-title {
-            font-size: var(--font-size-base);
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: var(--space-xs);
-        }
-
-        .feature-desc {
-            font-size: 0.78em;
-            color: var(--text-dim);
-            line-height: 1.6;
-        }
-
-        /* Info section */
-        .info-section {
-            width: 100%;
-            max-width: 1400px;
-            margin-top: var(--space-2xl);
-        }
-
-        .info-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-md);
-            margin-top: var(--space-lg);
-        }
-
-        .info-card {
-            padding: var(--space-lg);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            transition: border-color var(--transition);
-        }
-
-        .info-card:hover {
-            border-color: var(--border-hover);
-        }
-
-        .info-card h3 {
-            font-size: var(--font-size-base);
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: var(--space-sm);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .info-card h3 svg {
-            width: 16px;
-            height: 16px;
-            color: var(--accent);
-        }
-
-        .info-card p {
-            font-size: 0.8em;
-            color: var(--text-dim);
-            line-height: 1.7;
-            margin-bottom: var(--space-sm);
-        }
-
-        .info-card code {
-            display: block;
-            font-family: var(--font-mono);
-            font-size: 0.8em;
-            color: var(--text-secondary);
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: var(--space-sm) var(--space-md);
-            margin-top: var(--space-sm);
-            overflow-x: auto;
-            white-space: pre;
-        }
-
-        /* Debug console */
-        .debug-section {
-            width: 100%;
-            max-width: 1400px;
-            margin-top: var(--space-xl);
-        }
-
-        .debug-toggle {
-            font-size: 0.75em;
-            color: var(--text-faint);
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: var(--space-xs) 0;
-            transition: color var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-sans);
-        }
-
-        .debug-toggle:hover {
-            color: var(--text-dim);
-        }
-
-        .debug-toggle .arrow {
-            display: inline-block;
-            transition: transform var(--transition);
-            font-size: 0.7em;
-        }
-
-        .debug-toggle.open .arrow {
-            transform: rotate(90deg);
-        }
-
-        #debug_log {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            line-height: 1.7;
-            color: var(--text-dim);
-            margin-top: var(--space-sm);
-            width: 100%;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: var(--space-md);
-            height: 160px;
-            overflow-y: auto;
-            background: var(--surface);
-            display: none;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border) transparent;
-        }
-
-        #debug_log.visible {
-            display: block;
-            animation: slideDown 0.25s ease-out;
-        }
-
-        #debug_log .log-entry {
-            padding: 1px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        }
-
-        #debug_log .log-entry:last-child {
-            border-bottom: none;
-        }
-
-        #debug_log .log-time {
-            color: #333;
-            user-select: none;
-            margin-right: 4px;
-        }
-
-        #debug_log .log-error {
-            color: var(--error);
-            font-weight: 600;
-        }
-
-        #debug_log .log-success {
-            color: var(--success);
-        }
-
-        #debug_log .log-warn {
-            color: var(--warning);
-        }
-
-        /* Shortcuts modal */
-        .shortcuts-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease-out;
-            padding: var(--space-lg);
-        }
-
-        .shortcuts-overlay.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .shortcuts-card {
-            max-width: 420px;
-            width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-xl);
-            animation: scaleIn 0.25s ease-out;
-        }
-
-        .shortcuts-card h3 {
-            font-size: var(--font-size-md);
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: var(--space-lg);
-        }
-
-        .shortcut-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: var(--space-sm) 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .shortcut-row:last-child {
-            border-bottom: none;
-        }
-
-        .shortcut-action {
-            font-size: 0.85em;
-            color: var(--text-dim);
-        }
-
-        .shortcut-keys {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .shortcut-keys kbd {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            padding: 3px 8px;
-            border-radius: var(--radius-sm);
-            font-family: var(--font-sans);
-            font-size: 0.78em;
-            font-weight: 600;
-            color: var(--text-secondary);
-            min-width: 28px;
-            text-align: center;
-        }
-
-        .shortcut-keys .plus {
-            font-size: 0.7em;
-            color: var(--text-faint);
-        }
-
-        /* Toast notifications */
-        .toast-container {
-            position: fixed;
-            bottom: var(--space-lg);
-            right: var(--space-lg);
-            z-index: 700;
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-sm);
-            pointer-events: none;
-        }
-
-        .toast {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: var(--space-md) var(--space-lg);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            font-size: 0.82em;
-            color: var(--text-secondary);
-            box-shadow: var(--shadow-lg);
-            pointer-events: auto;
-            animation: slideUp 0.3s ease-out;
-            max-width: 360px;
-        }
-
-        .toast.leaving {
-            animation: fadeOut 0.25s ease-out forwards;
-        }
-
-        .toast-icon {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
-        }
-
-        .toast.toast-success .toast-icon {
-            color: var(--success);
-        }
-
-        .toast.toast-error .toast-icon {
-            color: var(--error);
-        }
-
-        .toast.toast-info .toast-icon {
-            color: var(--info);
-        }
-
-        .toast.toast-warn .toast-icon {
-            color: var(--warning);
-        }
-
-        /* Footer */
-        .footer {
-            width: 100%;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: var(--space-xl) var(--space-lg);
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .footer-left img {
-            width: 18px;
-            height: 18px;
-            opacity: 0.4;
-        }
-
-        .footer-left span {
-            font-size: 0.72em;
-            color: var(--text-faint);
-        }
-
-        .footer-links {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .footer-link {
-            font-size: 0.72em;
-            color: var(--text-faint);
-            text-decoration: none;
-            transition: color var(--transition);
-        }
-
-        .footer-link:hover {
-            color: var(--text-dim);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .topbar {
-                padding: 12px var(--space-md);
-            }
-
-            .brand-tagline {
-                display: none;
-            }
-
-            .brand-name {
-                font-size: 0.75em;
-            }
-
-            .nav-link span {
-                display: none;
-            }
-
-            .nav-separator {
-                display: none;
-            }
-
-            .hero {
-                padding: var(--space-2xl) 0 var(--space-lg);
-            }
-
-            .hero h1 {
-                font-size: var(--font-size-2xl);
-            }
-
-            .main {
-                padding: 70px var(--space-md) var(--space-lg);
-            }
-
-            .startup-card {
-                padding: var(--space-lg);
-            }
-
-            .startup-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .info-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .status-area {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .footer {
-                flex-direction: column;
-                gap: var(--space-md);
-                text-align: center;
-            }
-
-            .toast-container {
-                left: var(--space-md);
-                right: var(--space-md);
-            }
-
-            .toast {
-                max-width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 1.6em;
-            }
-
-            .hero-subtitle {
-                font-size: 0.88em;
-            }
-
-            .startup-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .toolbar-left {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AurionOS - Try it in your browser</title>
+  <link rel="icon" type="image/png" href="AurionOS.png">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #000000;
+      --bg-raised: #060606;
+      --surface: #0a0a0a;
+      --surface-hover: #0f0f0f;
+      --border: #1a1a1a;
+      --border-hover: #2a2a2a;
+      --border-active: #3a3a3a;
+      --text: #e8e4de;
+      --text-secondary: #b0a999;
+      --text-dim: #777069;
+      --text-faint: #4a453e;
+      --accent: #d4952a;
+      --accent-hover: #e0a435;
+      --accent-glow: rgba(212, 149, 42, 0.08);
+      --accent-glow-strong: rgba(212, 149, 42, 0.15);
+      --error: #c44040;
+      --success: #4a9e5a;
+      --warning: #c49340;
+      --info: #4a7e9e;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --space-3xl: 64px;
+      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
+      --font-size-xs: 0.7em;
+      --font-size-sm: 0.8em;
+      --font-size-base: 0.9em;
+      --font-size-md: 1em;
+      --font-size-lg: 1.2em;
+      --font-size-xl: 1.5em;
+      --font-size-2xl: 2em;
+      --font-size-3xl: 2.8em;
+      --radius-sm: 4px;
+      --radius: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-full: 9999px;
+      --transition-fast: 120ms ease-out;
+      --transition: 200ms ease-out;
+      --transition-slow: 350ms ease-out;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+      --shadow-xl: 0 20px 60px rgba(0,0,0,0.7);
+      --shadow-glow: 0 0 40px var(--accent-glow);
+    }
+
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    ::selection { background: var(--accent); color: #000; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes pulseDot { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.2); opacity: 0; } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes subtleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes floatUp { 0% { opacity: 0; transform: translateY(30px); } 60% { opacity: 1; } 100% { transform: translateY(0); } }
+    @keyframes fadeOut { to { opacity: 0; transform: translateY(8px); } }
+
+    /* Topbar */
+    .topbar {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-md) var(--space-lg);
+      position: fixed; top: 0; left: 0; z-index: 200;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.7) 75%, transparent);
+      pointer-events: none;
+      transition: background var(--transition-slow);
+    }
+    .topbar > * { pointer-events: auto; }
+    .topbar.scrolled { background: rgba(0,0,0,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); transition: opacity var(--transition); }
+    .brand:hover { opacity: 0.85; }
+    .brand-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); object-fit: contain; transition: transform var(--transition); }
+    .brand:hover .brand-icon { transform: scale(1.05); }
+    .brand-text { display: flex; flex-direction: column; gap: 1px; }
+    .brand-name { font-size: var(--font-size-sm); font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text); line-height: 1; }
+    .brand-tagline { font-size: 0.6em; color: var(--text-dim); letter-spacing: 0.5px; font-weight: 400; }
+
+    .nav-links { display: flex; align-items: center; gap: var(--space-sm); }
+    .nav-link {
+      display: flex; align-items: center; gap: 7px;
+      text-decoration: none; color: var(--text-dim); font-size: 0.82em; font-weight: 500;
+      padding: 7px 14px; border: 1px solid transparent; border-radius: var(--radius);
+      transition: all var(--transition); background: transparent; cursor: pointer; white-space: nowrap; font-family: var(--font-sans);
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface); border-color: var(--border); }
+    .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-link.github-link { background: rgba(255,255,255,0.04); border-color: var(--border); }
+    .nav-link.github-link:hover { background: rgba(255,255,255,0.08); border-color: var(--border-hover); }
+    .nav-link.github-link svg { fill: currentColor; }
+    .nav-separator { width: 1px; height: 20px; background: var(--border); margin: 0 var(--space-xs); }
+
+    /* Startup overlay */
+    #startup_overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.88); backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 1; transition: opacity 0.4s ease-out; padding: var(--space-lg);
+    }
+    #startup_overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .startup-card {
+      max-width: 500px; width: 100%;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: var(--space-2xl); animation: cardIn 0.5s ease-out; position: relative; overflow: hidden;
+    }
+    .startup-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5;
+    }
+    .startup-header { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg); }
+    .startup-icon { width: 48px; height: 48px; border-radius: var(--radius-md); object-fit: contain; }
+    .startup-card h2 { font-size: var(--font-size-xl); font-weight: 600; color: var(--text); line-height: 1.2; }
+    .startup-card p { font-size: var(--font-size-base); color: var(--text-dim); line-height: 1.75; margin-bottom: var(--space-md); }
+    .startup-card p strong { color: var(--text-secondary); font-weight: 500; }
+
+    .startup-note {
+      display: flex; align-items: flex-start; gap: var(--space-sm); padding: var(--space-md);
+      background: var(--accent-glow); border: 1px solid rgba(212,149,42,0.12); border-radius: var(--radius);
+      margin-bottom: var(--space-lg); font-size: 0.82em; color: var(--text-secondary); line-height: 1.6;
+    }
+    .startup-note svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+
+    .startup-actions { display: flex; align-items: center; gap: var(--space-md); margin-top: var(--space-lg); }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: var(--space-sm);
+      background: var(--accent); color: #000; border: none; padding: 12px 28px;
+      font-size: var(--font-size-base); font-weight: 600; border-radius: var(--radius);
+      cursor: pointer; transition: all var(--transition); letter-spacing: 0.3px; font-family: var(--font-sans);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(212,149,42,0.2); }
+    .btn-primary:active { transform: translateY(0); box-shadow: none; }
+    .btn-primary svg { width: 16px; height: 16px; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; color: var(--text-dim); border: 1px solid var(--border);
+      padding: 10px 20px; font-size: 0.85em; font-weight: 500; border-radius: var(--radius);
+      cursor: pointer; transition: all var(--transition); text-decoration: none; font-family: var(--font-sans);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); background: var(--surface-hover); }
+    .btn-ghost svg { width: 14px; height: 14px; }
+
+    /* Mouse lock banner */
+    .mouse-lock-banner {
+      position: fixed; top: var(--space-lg); left: 50%;
+      transform: translateX(-50%) translateY(-60px);
+      background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+      border: 1px solid var(--border-hover); border-radius: var(--radius-md);
+      padding: 10px 20px; display: flex; align-items: center; gap: var(--space-sm);
+      z-index: 600; opacity: 0; pointer-events: none;
+      transition: all 0.3s ease-out; box-shadow: var(--shadow-lg);
+    }
+    .mouse-lock-banner.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .mouse-lock-banner .lock-icon { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+    .mouse-lock-banner .lock-text { font-size: 0.82em; color: var(--text-secondary); white-space: nowrap; }
+    .mouse-lock-banner kbd {
+      display: inline-block; background: var(--surface); border: 1px solid var(--border-active);
+      padding: 2px 8px; border-radius: var(--radius-sm); font-family: var(--font-sans);
+      font-size: 0.9em; font-weight: 600; color: var(--text); margin: 0 2px;
+    }
+
+    body.pointer-locked, body.pointer-locked * { cursor: none !important; }
+
+    /* Main */
+    .main {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      padding: 80px var(--space-lg) var(--space-2xl); width: 100%; margin: 0 auto;
+    }
+
+    /* Hero */
+    .hero { text-align: center; padding: var(--space-3xl) 0 var(--space-xl); max-width: 600px; margin: 0 auto; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px;
+      background: var(--accent-glow); border: 1px solid rgba(212,149,42,0.15); border-radius: var(--radius-full);
+      font-size: 0.72em; font-weight: 600; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-md);
+      animation: floatUp 0.6s ease-out forwards;
+    }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulseDot 2s ease-in-out infinite; }
+    .hero h1 { font-size: var(--font-size-3xl); font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; margin-bottom: var(--space-md); animation: floatUp 0.6s ease-out 0.1s both; }
+    .hero h1 .accent { color: var(--accent); }
+    .hero-subtitle { font-size: var(--font-size-md); color: var(--text-dim); line-height: 1.7; animation: floatUp 0.6s ease-out 0.2s both; max-width: 480px; margin: 0 auto; }
+    .hero-actions { display: flex; align-items: center; justify-content: center; gap: var(--space-md); margin-top: var(--space-xl); animation: floatUp 0.6s ease-out 0.3s both; }
+    .scroll-indicator { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); margin-top: var(--space-2xl); animation: floatUp 0.6s ease-out 0.4s both; }
+    .scroll-indicator span { font-size: 0.7em; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; }
+    .scroll-arrow { width: 20px; height: 20px; color: var(--text-faint); animation: subtleFloat 2s ease-in-out infinite; }
+
+    /* Emulator section */
+    .emulator-section { width: 100%; max-width: 1400px; scroll-margin-top: 80px; }
+    .section-label {
+      display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);
+      font-size: 0.75em; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .emulator-section .section-label { margin-left: calc(-1 * var(--space-lg)); margin-right: calc(-1 * var(--space-lg)); margin-bottom: var(--space-md); }
+    .emulator-screen-center { display: flex; justify-content: center; margin-left: calc(-1 * var(--space-lg)); margin-right: calc(-1 * var(--space-lg)); }
+
+    .screen-wrapper {
+      position: relative; display: inline-block; border-radius: var(--radius-md);
+      border: 1px solid var(--border); background: #000; box-shadow: var(--shadow-xl);
+      transition: box-shadow 0.5s ease-out, border-color 0.4s ease-out; line-height: 0;
+    }
+    .screen-wrapper:hover { border-color: var(--border-hover); }
+    .screen-wrapper.running { box-shadow: 0 0 0 1px rgba(212,149,42,0.04), var(--shadow-glow), var(--shadow-xl); }
+
+    .screen-wrapper.fullscreen {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      border-radius: 0; border: none; z-index: 500; background: #000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .screen-wrapper.fullscreen #screen_container canvas { display: block; }
+
+    #screen_container { background: #000; }
+    #screen_container canvas { display: block; }
+
+    .click-to-focus {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 8;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md);
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); cursor: pointer;
+      transition: opacity 0.25s ease-out, backdrop-filter 0.25s ease-out; border-radius: var(--radius-md);
+    }
+    .click-to-focus:hover { background: rgba(0,0,0,0.45); }
+    .click-to-focus.hidden { opacity: 0; pointer-events: none; }
+    .click-to-focus-icon { width: 48px; height: 48px; color: var(--accent); opacity: 0.9; }
+    .click-to-focus-title { font-size: 1em; font-weight: 600; color: var(--text); letter-spacing: 0.3px; }
+    .click-to-focus-subtitle { font-size: 0.78em; color: var(--text-dim); text-align: center; max-width: 260px; line-height: 1.5; }
+
+    .screen-loading {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      min-width: 640px; min-height: 480px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-lg);
+      background: #000; z-index: 5; transition: opacity 0.5s ease-out;
+    }
+    .screen-loading.hidden { opacity: 0; pointer-events: none; }
+    .screen-loading .loading-logo { width: 56px; height: 56px; object-fit: contain; animation: subtleFloat 3s ease-in-out infinite; }
+    .screen-loading .loading-text { font-size: 0.8em; color: var(--text-dim); text-align: center; }
+    .loading-progress-container { width: 200px; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
+    .loading-progress-bar { height: 100%; background: var(--accent); border-radius: 1px; width: 0%; transition: width 0.3s ease-out; }
+    .loading-progress-bar.indeterminate { width: 30%; animation: shimmer 1.5s ease-in-out infinite; background: linear-gradient(90deg, transparent, var(--accent), transparent); background-size: 200% 100%; }
+
+    .screen-toolbar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: linear-gradient(to top, rgba(0,0,0,0.9) 40%, transparent);
+      opacity: 0; transition: opacity 0.3s ease-out; z-index: 10;
+    }
+    .screen-wrapper:hover .screen-toolbar { opacity: 1; }
+    .screen-wrapper.fullscreen .screen-toolbar { opacity: 1; padding: 14px 20px; }
+    .toolbar-left { display: flex; align-items: center; gap: var(--space-sm); }
+    .toolbar-status { font-size: 0.73em; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+    .toolbar-status .mini-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-dim); }
+    .toolbar-status .mini-dot.active { background: var(--success); }
+    .toolbar-right { display: flex; align-items: center; gap: 6px; }
+    .toolbar-btn {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: var(--text-dim);
+      padding: 5px 10px; border-radius: var(--radius-sm); font-size: 0.73em; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all var(--transition); font-family: var(--font-sans);
+    }
+    .toolbar-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); border-color: rgba(255,255,255,0.15); }
+    .toolbar-btn:active { transform: scale(0.97); }
+    .toolbar-btn svg { width: 13px; height: 13px; }
+    .toolbar-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.08); }
+
+    .status-area {
+      width: 100%; max-width: 1400px; margin-top: var(--space-md);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-sm);
+    }
+    .status-left { display: flex; align-items: center; gap: 10px; }
+    .status-indicator { position: relative; width: 8px; height: 8px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); transition: background 0.4s ease-out; position: relative; z-index: 1; }
+    .status-dot.loading { background: var(--accent); animation: pulseDot 1.5s ease-in-out infinite; }
+    .status-dot.running { background: var(--success); }
+    .status-dot.error { background: var(--error); }
+    .status-ring { position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; margin-top: -4px; margin-left: -4px; border-radius: 50%; border: 1px solid var(--success); opacity: 0; animation: none; }
+    .status-dot.running ~ .status-ring { animation: pulseRing 2s ease-out infinite; }
+    #status { font-size: var(--font-size-sm); color: var(--text-dim); transition: color var(--transition); }
+    .status-right { display: flex; align-items: center; gap: var(--space-md); }
+    .hint-text { font-size: 0.75em; color: var(--text-faint); transition: opacity var(--transition); }
+    .hint-text kbd { display: inline-block; background: var(--surface); border: 1px solid var(--border); padding: 1px 7px; border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.92em; font-weight: 600; color: var(--text-dim); margin: 0 1px; }
+
+    #file_selector { display: none; margin-top: var(--space-md); width: 100%; max-width: 1400px; animation: slideDown 0.3s ease-out; }
+    .drop-zone { width: 100%; padding: var(--space-xl) var(--space-lg); border: 2px dashed var(--border); border-radius: var(--radius-md); background: var(--surface); text-align: center; transition: all var(--transition); cursor: pointer; position: relative; }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: var(--accent-glow); }
+    .drop-zone.drag-over { border-style: solid; }
+    .drop-zone-icon { width: 40px; height: 40px; color: var(--text-faint); margin: 0 auto var(--space-md); transition: color var(--transition); }
+    .drop-zone:hover .drop-zone-icon { color: var(--accent); }
+    .drop-zone-title { font-size: var(--font-size-base); font-weight: 600; color: var(--text-secondary); margin-bottom: var(--space-xs); }
+    .drop-zone-subtitle { font-size: 0.78em; color: var(--text-dim); margin-bottom: var(--space-md); }
+    .drop-zone input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    .drop-zone-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #000; border: none; padding: 8px 20px; border-radius: var(--radius); font-size: 0.8em; font-weight: 600; cursor: pointer; transition: background var(--transition); pointer-events: none; }
+    .drop-zone:hover .drop-zone-btn { background: var(--accent-hover); }
+
+    /* Features */
+    .features-section { width: 100%; max-width: 1400px; margin-top: var(--space-3xl); padding-top: var(--space-xl); border-top: 1px solid var(--border); }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); margin-top: var(--space-lg); }
+    .feature-card { padding: var(--space-lg); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); transition: all var(--transition); }
+    .feature-card:hover { border-color: var(--border-hover); background: var(--surface-hover); transform: translateY(-2px); }
+    .feature-icon { width: 36px; height: 36px; border-radius: var(--radius); background: var(--accent-glow); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-md); color: var(--accent); transition: background var(--transition); }
+    .feature-card:hover .feature-icon { background: var(--accent-glow-strong); }
+    .feature-icon svg { width: 18px; height: 18px; }
+    .feature-title { font-size: var(--font-size-base); font-weight: 600; color: var(--text); margin-bottom: var(--space-xs); }
+    .feature-desc { font-size: 0.78em; color: var(--text-dim); line-height: 1.6; }
+
+    /* Info */
+    .info-section { width: 100%; max-width: 1400px; margin-top: var(--space-2xl); }
+    .info-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); margin-top: var(--space-lg); }
+    .info-card { padding: var(--space-lg); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); transition: border-color var(--transition); }
+    .info-card:hover { border-color: var(--border-hover); }
+    .info-card h3 { font-size: var(--font-size-base); font-weight: 600; color: var(--text); margin-bottom: var(--space-sm); display: flex; align-items: center; gap: var(--space-sm); }
+    .info-card h3 svg { width: 16px; height: 16px; color: var(--accent); }
+    .info-card p { font-size: 0.8em; color: var(--text-dim); line-height: 1.7; margin-bottom: var(--space-sm); }
+    .info-card code { display: block; font-family: var(--font-mono); font-size: 0.8em; color: var(--text-secondary); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-md); margin-top: var(--space-sm); overflow-x: auto; white-space: pre; }
+
+    /* Debug */
+    .debug-section { width: 100%; max-width: 1400px; margin-top: var(--space-xl); }
+    .debug-toggle { font-size: 0.75em; color: var(--text-faint); cursor: pointer; background: none; border: none; padding: var(--space-xs) 0; transition: color var(--transition); display: flex; align-items: center; gap: 6px; font-family: var(--font-sans); }
+    .debug-toggle:hover { color: var(--text-dim); }
+    .debug-toggle .arrow { display: inline-block; transition: transform var(--transition); font-size: 0.7em; }
+    .debug-toggle.open .arrow { transform: rotate(90deg); }
+    #debug_log { font-family: var(--font-mono); font-size: 11px; line-height: 1.7; color: var(--text-dim); margin-top: var(--space-sm); width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-md); height: 160px; overflow-y: auto; background: var(--surface); display: none; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    #debug_log.visible { display: block; animation: slideDown 0.25s ease-out; }
+    #debug_log .log-entry { padding: 1px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
+    #debug_log .log-entry:last-child { border-bottom: none; }
+    #debug_log .log-time { color: #333; user-select: none; margin-right: 4px; }
+    #debug_log .log-error { color: var(--error); font-weight: 600; }
+    #debug_log .log-success { color: var(--success); }
+    #debug_log .log-warn { color: var(--warning); }
+
+    /* Shortcuts modal */
+    .shortcuts-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 800; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease-out; padding: var(--space-lg); }
+    .shortcuts-overlay.visible { opacity: 1; pointer-events: auto; }
+    .shortcuts-card { max-width: 420px; width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-xl); animation: scaleIn 0.25s ease-out; }
+    .shortcuts-card h3 { font-size: var(--font-size-md); font-weight: 600; color: var(--text); margin-bottom: var(--space-lg); }
+    .shortcut-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; border-bottom: 1px solid var(--border); }
+    .shortcut-row:last-child { border-bottom: none; }
+    .shortcut-action { font-size: 0.85em; color: var(--text-dim); }
+    .shortcut-keys { display: flex; align-items: center; gap: 4px; }
+    .shortcut-keys kbd { background: var(--bg); border: 1px solid var(--border); padding: 3px 8px; border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.78em; font-weight: 600; color: var(--text-secondary); min-width: 28px; text-align: center; }
+    .shortcut-keys .plus { font-size: 0.7em; color: var(--text-faint); }
+
+    /* Toasts */
+    .toast-container { position: fixed; bottom: var(--space-lg); right: var(--space-lg); z-index: 700; display: flex; flex-direction: column; gap: var(--space-sm); pointer-events: none; }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg); display: flex; align-items: center; gap: var(--space-sm); font-size: 0.82em; color: var(--text-secondary); box-shadow: var(--shadow-lg); pointer-events: auto; animation: slideUp 0.3s ease-out; max-width: 360px; }
+    .toast.leaving { animation: fadeOut 0.25s ease-out forwards; }
+    .toast-icon { width: 18px; height: 18px; flex-shrink: 0; }
+    .toast.toast-success .toast-icon { color: var(--success); }
+    .toast.toast-error .toast-icon { color: var(--error); }
+    .toast.toast-info .toast-icon { color: var(--info); }
+    .toast.toast-warn .toast-icon { color: var(--warning); }
+
+    /* Footer */
+    .footer { width: 100%; max-width: 960px; margin: 0 auto; padding: var(--space-xl) var(--space-lg); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .footer-left { display: flex; align-items: center; gap: var(--space-sm); }
+    .footer-left img { width: 18px; height: 18px; opacity: 0.4; }
+    .footer-left span { font-size: 0.72em; color: var(--text-faint); }
+    .footer-links { display: flex; align-items: center; gap: var(--space-md); }
+    .footer-link { font-size: 0.72em; color: var(--text-faint); text-decoration: none; transition: color var(--transition); }
+    .footer-link:hover { color: var(--text-dim); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .topbar { padding: 12px var(--space-md); }
+      .brand-tagline { display: none; }
+      .brand-name { font-size: 0.75em; }
+      .nav-link span { display: none; }
+      .nav-separator { display: none; }
+      .hero { padding: var(--space-2xl) 0 var(--space-lg); }
+      .hero h1 { font-size: var(--font-size-2xl); }
+      .main { padding: 70px var(--space-md) var(--space-lg); }
+      .startup-card { padding: var(--space-lg); }
+      .startup-actions { flex-direction: column; align-items: stretch; }
+      .features-grid { grid-template-columns: 1fr; }
+      .info-cards { grid-template-columns: 1fr; }
+      .status-area { flex-direction: column; align-items: flex-start; }
+      .footer { flex-direction: column; gap: var(--space-md); text-align: center; }
+      .toast-container { left: var(--space-md); right: var(--space-md); }
+      .toast { max-width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.6em; }
+      .hero-subtitle { font-size: 0.88em; }
+      .startup-header { flex-direction: column; text-align: center; }
+      .toolbar-left { display: none; }
+    }
+  </style>
 </head>
-
 <body>
 
-    <header class="topbar" id="topbar">
-        <a href="#" class="brand">
-            <img src="AurionOS.png" alt="AurionOS" class="brand-icon">
-            <div class="brand-text">
-                <span class="brand-name">AurionOS</span>
-                <span class="brand-tagline">Operating System</span>
-            </div>
-        </a>
-        <nav class="nav-links">
-            <button class="nav-link" onclick="scrollToEmulator()" title="Jump to emulator">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2" />
-                    <path d="M8 21h8M12 17v4" />
-                </svg>
-                <span>Try it</span>
-            </button>
-            <button class="nav-link" onclick="showShortcuts()" title="Keyboard shortcuts">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2" />
-                    <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h8" />
-                </svg>
-                <span>Shortcuts</span>
-            </button>
-            <div class="nav-separator"></div>
-            <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener"
-                class="nav-link github-link">
-                <svg viewBox="0 0 16 16" aria-hidden="true">
-                    <path
-                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-                </svg>
-                <span>Source</span>
-            </a>
-        </nav>
-    </header>
-
-    <div class="mouse-lock-banner" id="mouse_lock_banner">
-        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" />
-            <path d="M7 11V7a5 5 0 0110 0v4" />
-        </svg>
-        <span class="lock-text">Mouse captured - press <kbd>Esc</kbd> to release</span>
+<header class="topbar" id="topbar">
+  <a href="#" class="brand">
+    <img src="AurionOS.png" alt="AurionOS" class="brand-icon">
+    <div class="brand-text">
+      <span class="brand-name">AurionOS</span>
+      <span class="brand-tagline">Operating System</span>
     </div>
+  </a>
+  <nav class="nav-links">
+    <button class="nav-link" onclick="scrollToEmulator()" title="Jump to emulator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      <span>Try it</span>
+    </button>
+    <button class="nav-link" onclick="showShortcuts()" title="Keyboard shortcuts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h8"/></svg>
+      <span>Shortcuts</span>
+    </button>
+    <div class="nav-separator"></div>
+    <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="nav-link github-link">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <span>Source</span>
+    </a>
+  </nav>
+</header>
 
-    <div id="startup_overlay">
-        <div class="startup-card">
-            <div class="startup-header">
-                <img src="AurionOS.png" alt="AurionOS" class="startup-icon">
-                <h2>AurionOS in your browser</h2>
-            </div>
-            <p>This runs a full operating system through in-browser emulation. It works, but it is <strong>noticeably
-                    slower</strong> than the real thing - that is just what happens when you emulate hardware in
-                JavaScript.</p>
-            <div class="startup-note">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16v-4M12 8h.01" />
-                </svg>
-                <span>For the real experience, run AurionOS in VirtualBox or on actual hardware. It is significantly
-                    faster and you will see what this system can actually do.</span>
-            </div>
-            <div class="startup-actions">
-                <button class="btn-primary" onclick="dismissOverlay()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                    Start emulator
-                </button>
-                <a href="https://github.com/Luka12-dev/AurionOS/releases" target="_blank" rel="noopener"
-                    class="btn-ghost">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Download ISO
-                </a>
-            </div>
+<div class="mouse-lock-banner" id="mouse_lock_banner">
+  <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+  <span class="lock-text">Mouse captured — press <kbd>Esc</kbd> to release</span>
+</div>
+
+<div id="startup_overlay">
+  <div class="startup-card">
+    <div class="startup-header">
+      <img src="AurionOS.png" alt="AurionOS" class="startup-icon">
+      <h2>AurionOS in your browser</h2>
+    </div>
+    <p>This runs a full operating system through in-browser emulation. It works, but it is <strong>noticeably slower</strong> than the real thing — that is just what happens when you emulate hardware in JavaScript.</p>
+    <div class="startup-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span>For the real experience, run AurionOS in VirtualBox or on actual hardware. It is significantly faster and you will see what this system can actually do.</span>
+    </div>
+    <div class="startup-actions">
+      <button class="btn-primary" onclick="dismissOverlay()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Start emulator
+      </button>
+      <a href="https://github.com/Luka12-dev/AurionOS/releases" target="_blank" rel="noopener" class="btn-ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download ISO
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="shortcuts-overlay" id="shortcuts_overlay" onclick="hideShortcuts(event)">
+  <div class="shortcuts-card" onclick="event.stopPropagation()">
+    <h3>Keyboard shortcuts</h3>
+    <div class="shortcut-row"><span class="shortcut-action">Click screen to take control</span><div class="shortcut-keys"><kbd>Click</kbd></div></div>
+    <div class="shortcut-row"><span class="shortcut-action">Release mouse from emulator</span><div class="shortcut-keys"><kbd>Esc</kbd></div></div>
+    <div class="shortcut-row"><span class="shortcut-action">Toggle fullscreen</span><div class="shortcut-keys"><kbd>F11</kbd></div></div>
+    <div class="shortcut-row"><span class="shortcut-action">Toggle debug console</span><div class="shortcut-keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>`</kbd></div></div>
+    <div class="shortcut-row"><span class="shortcut-action">Show this dialog</span><div class="shortcut-keys"><kbd>?</kbd></div></div>
+    <div class="shortcut-row"><span class="shortcut-action">Scroll to emulator</span><div class="shortcut-keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Enter</kbd></div></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast_container"></div>
+
+<main class="main">
+  <section class="hero">
+    <div class="hero-badge"><span class="dot"></span>Live demo</div>
+    <h1>Try <span class="accent">AurionOS</span><br>right here.</h1>
+    <p class="hero-subtitle">A custom operating system running live in your browser through x86 emulation. No downloads, no setup — just click and explore.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="scrollToEmulator()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Jump to emulator
+      </button>
+      <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="btn-ghost">View source</a>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll down</span>
+      <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </section>
+
+  <section class="emulator-section" id="emulator_section">
+    <div class="section-label"><span>Emulator</span></div>
+    <div class="emulator-screen-center">
+      <div class="screen-wrapper" id="screen_wrapper">
+        <div id="screen_container">
+          <div style="white-space: pre; font-family: 'Courier New', Courier, monospace; line-height: 14px"></div>
+          <canvas style="display: none"></canvas>
         </div>
-    </div>
 
-    <div class="shortcuts-overlay" id="shortcuts_overlay" onclick="hideShortcuts(event)">
-        <div class="shortcuts-card" onclick="event.stopPropagation()">
-            <h3>Keyboard shortcuts</h3>
-            <div class="shortcut-row"><span class="shortcut-action">Click screen to take control</span>
-                <div class="shortcut-keys"><kbd>Click</kbd></div>
-            </div>
-            <div class="shortcut-row"><span class="shortcut-action">Release mouse from emulator</span>
-                <div class="shortcut-keys"><kbd>Esc</kbd></div>
-            </div>
-            <div class="shortcut-row"><span class="shortcut-action">Toggle fullscreen</span>
-                <div class="shortcut-keys"><kbd>F11</kbd></div>
-            </div>
-            <div class="shortcut-row"><span class="shortcut-action">Toggle debug console</span>
-                <div class="shortcut-keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>`</kbd></div>
-            </div>
-            <div class="shortcut-row"><span class="shortcut-action">Show this dialog</span>
-                <div class="shortcut-keys"><kbd>?</kbd></div>
-            </div>
-            <div class="shortcut-row"><span class="shortcut-action">Scroll to emulator</span>
-                <div class="shortcut-keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Enter</kbd></div>
-            </div>
+        <div class="click-to-focus" id="click_to_focus">
+          <svg class="click-to-focus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5l13 9-7 2-2 7-4-18z"/></svg>
+          <div class="click-to-focus-title">Click to take control</div>
+          <div class="click-to-focus-subtitle">Your mouse and keyboard will be captured by the VM. Press <strong>Esc</strong> to release.</div>
         </div>
+
+        <div class="screen-loading" id="screen_loading">
+          <img src="AurionOS.png" alt="" class="loading-logo">
+          <div class="loading-progress-container">
+            <div class="loading-progress-bar indeterminate" id="loading_progress_bar"></div>
+          </div>
+          <div class="loading-text" id="loading_text">Preparing emulator...</div>
+        </div>
+
+        <div class="screen-toolbar">
+          <div class="toolbar-left">
+            <div class="toolbar-status" id="toolbar_status">
+              <div class="mini-dot" id="toolbar_dot"></div>
+              <span id="toolbar_status_text">Waiting to start...</span>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <button class="toolbar-btn" onclick="restartEmulator()" title="Restart emulator">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+              Restart
+            </button>
+            <div class="toolbar-divider"></div>
+            <button class="toolbar-btn" onclick="toggleFullscreen()" id="fullscreen_btn" title="Toggle fullscreen (F11)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+              <span id="fullscreen_label">Fullscreen</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="toast-container" id="toast_container"></div>
+    <div class="status-area">
+      <div class="status-left">
+        <div class="status-indicator">
+          <div class="status-dot loading" id="status_dot"></div>
+          <div class="status-ring" id="status_ring"></div>
+        </div>
+        <span id="status">Initializing emulator...</span>
+      </div>
+      <div class="status-right">
+        <span class="hint-text" id="hint_text">Click the screen to take control — press <kbd>Esc</kbd> to release</span>
+      </div>
+    </div>
 
-    <main class="main">
-        <section class="hero">
-            <div class="hero-badge"><span class="dot"></span>Live demo</div>
-            <h1>Try <span class="accent">AurionOS</span><br>right here.</h1>
-            <p class="hero-subtitle">A custom operating system running live in your browser through x86 emulation. No
-                downloads, no setup - just click and explore.</p>
-            <div class="hero-actions">
-                <button class="btn-primary" onclick="scrollToEmulator()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round">
-                        <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                    Jump to emulator
-                </button>
-                <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="btn-ghost">View
-                    source</a>
-            </div>
-            <div class="scroll-indicator">
-                <span>Scroll down</span>
-                <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round">
-                    <polyline points="6 9 12 15 18 9" />
-                </svg>
-            </div>
-        </section>
+    <div id="file_selector">
+      <div class="drop-zone" id="drop_zone">
+        <svg class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="drop-zone-title">Drop your ISO file here</div>
+        <div class="drop-zone-subtitle">or click to browse — looking for <strong>aurionos_debug.iso</strong></div>
+        <div class="drop-zone-btn">Select file</div>
+        <input type="file" id="iso_file" accept=".iso" title="Select AurionOS ISO file">
+      </div>
+    </div>
+  </section>
 
-        <section class="emulator-section" id="emulator_section">
-            <div class="section-label"><span>Emulator</span></div>
+  <section class="features-section">
+    <div class="section-label"><span>What makes AurionOS different</span></div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg></div>
+        <div class="feature-title">Built from scratch</div>
+        <div class="feature-desc">Not a Linux distro. Not a fork. Every line of kernel code was written from the ground up, with full control over the architecture.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div class="feature-title">Lightweight and fast</div>
+        <div class="feature-desc">Minimal footprint. Boots in seconds on real hardware. Every component earns its place — no bloat, no unnecessary layers.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+        <div class="feature-title">Open source</div>
+        <div class="feature-desc">Read every line. Build it yourself. Contribute improvements. The full source is on GitHub — nothing hidden, nothing proprietary.</div>
+      </div>
+    </div>
+  </section>
 
-            <div class="emulator-screen-center">
-                <div class="screen-wrapper" id="screen_wrapper">
-                    <div id="screen_container">
-                        <div
-                            style="white-space: pre; font-family: 'Courier New', Courier, monospace; line-height: 14px">
-                        </div>
-                        <canvas style="display: none"></canvas>
-                    </div>
-
-                    <!-- Click to focus overlay - shown when emulator is not focused -->
-                    <div class="click-to-focus" id="click_to_focus">
-                        <svg class="click-to-focus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5.5 3.5l13 9-7 2-2 7-4-18z" />
-                        </svg>
-                        <div class="click-to-focus-title">Click to take control</div>
-                        <div class="click-to-focus-subtitle">Your mouse and keyboard will be captured by the VM. Press
-                            <strong>Esc</strong> to release. If mouse doesn't work, try clicking multiple times or check
-                            browser permissions.
-                        </div>
-                    </div>
-
-                    <div class="screen-loading" id="screen_loading">
-                        <img src="AurionOS.png" alt="" class="loading-logo">
-                        <div class="loading-progress-container">
-                            <div class="loading-progress-bar indeterminate" id="loading_progress_bar"></div>
-                        </div>
-                        <div class="loading-text" id="loading_text">Preparing emulator...</div>
-                    </div>
-
-                    <div class="screen-toolbar">
-                        <div class="toolbar-left">
-                            <div class="toolbar-status" id="toolbar_status">
-                                <div class="mini-dot" id="toolbar_dot"></div>
-                                <span id="toolbar_status_text">Waiting to start...</span>
-                            </div>
-                        </div>
-                        <div class="toolbar-right">
-                            <button class="toolbar-btn" onclick="restartEmulator()" title="Restart emulator">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round">
-                                    <polyline points="23 4 23 10 17 10" />
-                                    <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
-                                </svg>
-                                Restart
-                            </button>
-                            <div class="toolbar-divider"></div>
-                            <button class="toolbar-btn" onclick="toggleFullscreen()" id="fullscreen_btn"
-                                title="Toggle fullscreen (F11)">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round">
-                                    <path
-                                        d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />
-                                </svg>
-                                <span id="fullscreen_label">Fullscreen</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="status-area">
-                <div class="status-left">
-                    <div class="status-indicator">
-                        <div class="status-dot loading" id="status_dot"></div>
-                        <div class="status-ring" id="status_ring"></div>
-                    </div>
-                    <span id="status">Initializing emulator...</span>
-                </div>
-                <div class="status-right">
-                    <span class="hint-text" id="hint_text">Click the screen to take control - press <kbd>Esc</kbd> to
-                        release</span>
-                </div>
-            </div>
-
-            <div id="file_selector">
-                <div class="drop-zone" id="drop_zone">
-                    <svg class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                        stroke-linecap="round">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                        <polyline points="17 8 12 3 7 8" />
-                        <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                    <div class="drop-zone-title">Drop your ISO file here</div>
-                    <div class="drop-zone-subtitle">or click to browse - looking for <strong>aurionos_debug.iso</strong>
-                    </div>
-                    <div class="drop-zone-btn">Select file</div>
-                    <input type="file" id="iso_file" accept=".iso" title="Select AurionOS ISO file">
-                </div>
-            </div>
-        </section>
-
-        <section class="features-section">
-            <div class="section-label"><span>What makes AurionOS different</span></div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round">
-                            <rect x="4" y="4" width="16" height="16" rx="2" />
-                            <rect x="9" y="9" width="6" height="6" />
-                            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3" />
-                        </svg></div>
-                    <div class="feature-title">Built from scratch</div>
-                    <div class="feature-desc">Not a Linux distro. Not a fork. Every line of kernel code was written from
-                        the ground up, with full control over the architecture.</div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                        </svg></div>
-                    <div class="feature-title">Lightweight and fast</div>
-                    <div class="feature-desc">Minimal footprint. Boots in seconds on real hardware. Every component
-                        earns its place - no bloat, no unnecessary layers.</div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round">
-                            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-                            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
-                        </svg></div>
-                    <div class="feature-title">Open source</div>
-                    <div class="feature-desc">Read every line. Build it yourself. Contribute improvements. The full
-                        source is on GitHub - nothing hidden, nothing proprietary.</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="info-section">
-            <div class="section-label"><span>Run it for real</span></div>
-            <div class="info-cards">
-                <div class="info-card">
-                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" />
-                            <path d="M8 21h8M12 17v4" />
-                        </svg>VirtualBox</h3>
-                    <p>The quickest way to try AurionOS at full speed. Download the ISO, create a new VM with 512MB RAM,
-                        attach the ISO as a CD drive, and boot.</p>
-                    <code>Type: Other/Unknown
+  <section class="info-section">
+    <div class="section-label"><span>Run it for real</span></div>
+    <div class="info-cards">
+      <div class="info-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>VirtualBox</h3>
+        <p>The quickest way to try AurionOS at full speed. Download the ISO, create a new VM with 512MB RAM, attach the ISO as a CD drive, and boot.</p>
+        <code>Type: Other/Unknown
 RAM: 512 MB
 Storage: Optional</code>
-                </div>
-                <div class="info-card">
-                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round">
-                            <polyline points="4 17 10 11 4 5" />
-                            <line x1="12" y1="19" x2="20" y2="19" />
-                        </svg>Build from source</h3>
-                    <p>Clone the repository and build AurionOS yourself. You will need a cross-compiler toolchain and
-                        NASM. Full instructions are in the README.</p>
-                    <code>git clone https://github.com/Luka12-dev/AurionOS.git
+      </div>
+      <div class="info-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>Build from source</h3>
+        <p>Clone the repository and build AurionOS yourself. You will need a cross-compiler toolchain and NASM. Full instructions are in the README.</p>
+        <code>git clone https://github.com/Luka12-dev/AurionOS.git
 cd AurionOS
 make all</code>
-                </div>
-            </div>
-        </section>
+      </div>
+    </div>
+  </section>
 
-        <section class="debug-section">
-            <button class="debug-toggle" id="debug_toggle" onclick="toggleDebug()">
-                <span class="arrow">&#9654;</span>
-                Debug console
-            </button>
-            <div id="debug_log"></div>
-        </section>
-    </main>
+  <section class="debug-section">
+    <button class="debug-toggle" id="debug_toggle" onclick="toggleDebug()">
+      <span class="arrow">&#9654;</span>
+      Debug console
+    </button>
+    <div id="debug_log"></div>
+  </section>
+</main>
 
-    <footer class="footer">
-        <div class="footer-left">
-            <img src="AurionOS.png" alt="">
-            <span>AurionOS - emulated via v86</span>
-        </div>
-        <div class="footer-links">
-            <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener"
-                class="footer-link">GitHub</a>
-            <a href="https://github.com/Luka12-dev/AurionOS/releases" target="_blank" rel="noopener"
-                class="footer-link">Releases</a>
-            <a href="https://github.com/Luka12-dev/AurionOS/issues" target="_blank" rel="noopener"
-                class="footer-link">Report a bug</a>
-        </div>
-    </footer>
+<footer class="footer">
+  <div class="footer-left">
+    <img src="AurionOS.png" alt="">
+    <span>AurionOS — emulated via v86</span>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="footer-link">GitHub</a>
+    <a href="https://github.com/Luka12-dev/AurionOS/releases" target="_blank" rel="noopener" class="footer-link">Releases</a>
+    <a href="https://github.com/Luka12-dev/AurionOS/issues" target="_blank" rel="noopener" class="footer-link">Report a bug</a>
+  </div>
+</footer>
 
-    <script>
-        var emulatorInstance = null;
-        var isPointerLocked = false;
-        var isFullscreen = false;
-        var emulatorReady = false;
+<script>
+  var emulatorInstance = null;
+  var isPointerLocked = false;
+  var isFullscreen = false;
+  var emulatorReady = false;
 
-        function dismissOverlay() {
-            var overlay = document.getElementById('startup_overlay');
-            overlay.classList.add('hidden');
-            setTimeout(function () { overlay.remove(); }, 450);
-        }
+  /* ── Utility ── */
+  function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    var sizes = ['B', 'KB', 'MB', 'GB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+  }
 
-        function scrollToEmulator() {
-            var section = document.getElementById('emulator_section');
-            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+  function log(msg, level) {
+    level = level || 'info';
+    console.log('[V86] [' + level + ']', msg);
+    var debug = document.getElementById('debug_log');
+    if (!debug) return;
+    var time = new Date().toLocaleTimeString();
+    var entry = document.createElement('div');
+    entry.className = 'log-entry';
+    var timeSpan = document.createElement('span');
+    timeSpan.className = 'log-time';
+    timeSpan.textContent = '[' + time + '] ';
+    entry.appendChild(timeSpan);
+    var msgSpan = document.createElement('span');
+    if (level === 'error') msgSpan.className = 'log-error';
+    else if (level === 'success') msgSpan.className = 'log-success';
+    else if (level === 'warn') msgSpan.className = 'log-warn';
+    msgSpan.textContent = msg;
+    entry.appendChild(msgSpan);
+    debug.appendChild(entry);
+    debug.scrollTop = debug.scrollHeight;
+  }
 
-        (function () {
-            var topbar = document.getElementById('topbar');
-            window.addEventListener('scroll', function () {
-                if (window.scrollY > 60) topbar.classList.add('scrolled');
-                else topbar.classList.remove('scrolled');
-            }, { passive: true });
-        })();
+  window.onerror = function (msg, url, line) { log('JS Error: ' + msg + ' (line ' + line + ')', 'error'); };
 
-        function showShortcuts() {
-            document.getElementById('shortcuts_overlay').classList.add('visible');
-        }
+  /* ── UI helpers ── */
+  function dismissOverlay() {
+    var overlay = document.getElementById('startup_overlay');
+    overlay.classList.add('hidden');
+    setTimeout(function () { overlay.remove(); }, 450);
+  }
 
-        function hideShortcuts(event) {
-            if (event && event.target !== document.getElementById('shortcuts_overlay')) return;
-            document.getElementById('shortcuts_overlay').classList.remove('visible');
-        }
+  function scrollToEmulator() {
+    var section = document.getElementById('emulator_section');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-        function toggleFullscreen() {
-            var wrapper = document.getElementById('screen_wrapper');
-            isFullscreen = !isFullscreen;
-            wrapper.classList.toggle('fullscreen', isFullscreen);
-            document.getElementById('fullscreen_label').textContent = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
-            if (isFullscreen) showToast('Press Esc or F11 to exit fullscreen', 'info');
-        }
+  function showShortcuts() { document.getElementById('shortcuts_overlay').classList.add('visible'); }
+  function hideShortcuts(event) {
+    if (event && event.target !== document.getElementById('shortcuts_overlay')) return;
+    document.getElementById('shortcuts_overlay').classList.remove('visible');
+  }
 
-        /* Click-to-focus: show/hide the overlay and manage pointer lock */
-        function showClickToFocus() {
-            var overlay = document.getElementById('click_to_focus');
-            if (overlay) overlay.classList.remove('hidden');
-        }
+  function toggleFullscreen() {
+    var wrapper = document.getElementById('screen_wrapper');
+    isFullscreen = !isFullscreen;
+    wrapper.classList.toggle('fullscreen', isFullscreen);
+    document.getElementById('fullscreen_label').textContent = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
+    if (isFullscreen) showToast('Press Esc or F11 to exit fullscreen', 'info');
+  }
 
-        function hideClickToFocus() {
-            var overlay = document.getElementById('click_to_focus');
-            if (overlay) overlay.classList.add('hidden');
-        }
+  function showClickToFocus() {
+    var overlay = document.getElementById('click_to_focus');
+    if (overlay) overlay.classList.remove('hidden');
+  }
+  function hideClickToFocus() {
+    var overlay = document.getElementById('click_to_focus');
+    if (overlay) overlay.classList.add('hidden');
+  }
 
-        /* Pointer lock management */
-        (function () {
-            var screenContainer = document.getElementById('screen_container');
-            var banner = document.getElementById('mouse_lock_banner');
-            var clickOverlay = document.getElementById('click_to_focus');
-            var body = document.body;
-            var pointerLockAttempts = 0;
-            var lastAttemptTime = 0;
+  function showToast(message, type) {
+    type = type || 'info';
+    var container = document.getElementById('toast_container');
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    var iconPaths = {
+      success: '<circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/>',
+      error:   '<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>',
+      info:    '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+      warn:    '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/>'
+    };
+    toast.innerHTML = '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (iconPaths[type] || iconPaths.info) + '</svg><span>' + message + '</span>';
+    container.appendChild(toast);
+    setTimeout(function () {
+      toast.classList.add('leaving');
+      setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+    }, 4000);
+  }
 
-            function onPointerLockChange() {
-                var locked = document.pointerLockElement !== null;
-                isPointerLocked = locked;
+  function toggleDebug() {
+    var logEl = document.getElementById('debug_log');
+    var btn = document.getElementById('debug_toggle');
+    var isVisible = logEl.classList.toggle('visible');
+    btn.classList.toggle('open', isVisible);
+  }
 
-                if (locked) {
-                    /* Pointer is locked - hide cursor, hide overlay, show banner */
-                    body.classList.add('pointer-locked');
-                    banner.classList.add('visible');
-                    hideClickToFocus();
-                    log('=== POINTER LOCK ACQUIRED ===', 'success');
-                    log('Permission Status: GRANTED', 'success');
-                    log('Locked Element: ' + (document.pointerLockElement ? document.pointerLockElement.tagName : 'NONE'), 'success');
-                    log('Mouse events should now work in emulator', 'success');
-                    log('==============================', 'success');
-                    pointerLockAttempts = 0;
-                } else {
-                    /* Pointer released - restore cursor, show overlay again */
-                    body.classList.remove('pointer-locked');
-                    banner.classList.remove('visible');
-                    if (emulatorReady) showClickToFocus();
-                    log('Pointer lock released', 'info');
-                }
+  function setStatus(text, state) {
+    var statusEl   = document.getElementById('status');
+    var dot        = document.getElementById('status_dot');
+    var toolbarDot = document.getElementById('toolbar_dot');
+    var toolbarTxt = document.getElementById('toolbar_status_text');
+    var loadingTxt = document.getElementById('loading_text');
+    statusEl.textContent = text;
+    dot.className = 'status-dot';
+    if (state) dot.classList.add(state);
+    if (toolbarDot) { toolbarDot.className = 'mini-dot'; if (state === 'running') toolbarDot.classList.add('active'); }
+    if (toolbarTxt) toolbarTxt.textContent = text;
+    if (loadingTxt) loadingTxt.textContent = text;
+  }
+
+  function hideLoadingScreen() {
+    var loadingScreen = document.getElementById('screen_loading');
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+      setTimeout(function () { if (loadingScreen.parentNode) loadingScreen.parentNode.removeChild(loadingScreen); }, 600);
+    }
+  }
+
+  /* ── Topbar scroll ── */
+  (function () {
+    var topbar = document.getElementById('topbar');
+    window.addEventListener('scroll', function () {
+      topbar.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+  })();
+
+  /* ── Pointer lock ──────────────────────────────────────────────────────────
+   *
+   *  THE FIX for Linux mouse breakage:
+   *
+   *  The old code had a custom `mousemove` listener that called
+   *  emulatorInstance.mouse_set_position(scaledX, scaledY).
+   *  That API sets ABSOLUTE coordinates, not relative deltas, so it
+   *  fought with v86's own pointer-lock mouse handler and produced
+   *  broken / frozen mouse input — especially on Linux where the browser
+   *  delivers movementX/Y slightly differently under pointer lock.
+   *
+   *  Solution: remove the custom mousemove handler entirely.
+   *  v86 already hooks into the pointer-lock mousemove event natively
+   *  and handles relative movement correctly on all platforms.
+   *  We just need to request the lock and let v86 do its thing.
+   *
+   * ─────────────────────────────────────────────────────────────────────── */
+  (function () {
+    var screenContainer = document.getElementById('screen_container');
+    var banner          = document.getElementById('mouse_lock_banner');
+    var clickOverlay    = document.getElementById('click_to_focus');
+    var body            = document.body;
+
+    function requestLock() {
+      if (!emulatorReady || !screenContainer) return;
+      /* Use the un-prefixed API first; fall back to vendor prefixes */
+      var req = screenContainer.requestPointerLock
+             || screenContainer.mozRequestPointerLock
+             || screenContainer.webkitRequestPointerLock;
+      if (req) req.call(screenContainer);
+    }
+
+    function onPointerLockChange() {
+      var locked = (
+        document.pointerLockElement === screenContainer ||
+        document.mozPointerLockElement === screenContainer ||
+        document.webkitPointerLockElement === screenContainer
+      );
+      isPointerLocked = locked;
+      if (locked) {
+        body.classList.add('pointer-locked');
+        banner.classList.add('visible');
+        hideClickToFocus();
+      } else {
+        body.classList.remove('pointer-locked');
+        banner.classList.remove('visible');
+        if (emulatorReady) showClickToFocus();
+      }
+    }
+
+    document.addEventListener('pointerlockchange',       onPointerLockChange, false);
+    document.addEventListener('mozpointerlockchange',    onPointerLockChange, false);
+    document.addEventListener('webkitpointerlockchange', onPointerLockChange, false);
+
+    document.addEventListener('pointerlockerror', function () {
+      log('Pointer lock denied by browser.', 'warn');
+      showToast('Could not capture mouse — try clicking again', 'warn');
+    }, false);
+
+    /* Clicking the overlay locks the pointer and hands control to v86 */
+    if (clickOverlay) {
+      clickOverlay.addEventListener('click', requestLock, false);
+    }
+
+    /*
+     * NOTE: No custom mousemove handler here.
+     * v86 listens for pointer-lock mousemove events on its own canvas
+     * and translates movementX/Y into PS/2 mouse packets internally.
+     * Adding our own handler on top breaks that on Linux.
+     */
+  })();
+
+  /* ── Global keyboard shortcuts ── */
+  document.addEventListener('keydown', function (e) {
+    /* While the emulator has the mouse, let it consume all keys */
+    if (isPointerLocked) return;
+
+    if (e.key === 'Escape') {
+      if (isFullscreen) toggleFullscreen();
+      document.getElementById('shortcuts_overlay').classList.remove('visible');
+    }
+    if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
+    if (e.key === '?' && !e.ctrlKey && !e.altKey) {
+      var tag = (e.target.tagName || '').toLowerCase();
+      if (tag !== 'input' && tag !== 'textarea') showShortcuts();
+    }
+    if (e.key === '`' && e.ctrlKey) { e.preventDefault(); toggleDebug(); }
+    if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); scrollToEmulator(); }
+  });
+
+  /* ── Drop zone ── */
+  (function () {
+    var dropZone = document.getElementById('drop_zone');
+    if (!dropZone) return;
+    var preventDefaults = function (e) { e.preventDefault(); e.stopPropagation(); };
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (ev) { dropZone.addEventListener(ev, preventDefaults, false); });
+    ['dragenter', 'dragover'].forEach(function (ev) { dropZone.addEventListener(ev, function () { dropZone.classList.add('drag-over'); }, false); });
+    ['dragleave', 'drop'].forEach(function (ev) { dropZone.addEventListener(ev, function () { dropZone.classList.remove('drag-over'); }, false); });
+    dropZone.addEventListener('drop', function (e) {
+      var files = e.dataTransfer.files;
+      if (files.length > 0) {
+        var file = files[0];
+        log('File dropped: ' + file.name + ' (' + formatBytes(file.size) + ')');
+        if (file.name.toLowerCase().endsWith('.iso')) startEmulatorWithConfig({ file: file });
+        else { showToast('Please drop an .iso file', 'error'); log('Rejected: not an ISO: ' + file.name, 'warn'); }
+      }
+    }, false);
+  })();
+
+  /* ── Restart ── */
+  function restartEmulator() {
+    if (emulatorInstance && emulatorReady) {
+      log('Restarting emulator...');
+      showToast('Restarting AurionOS...', 'info');
+      emulatorInstance.restart();
+    } else {
+      log('Cannot restart — emulator not ready.', 'warn');
+      showToast('Emulator is not ready yet', 'warn');
+    }
+  }
+
+  /* CommonJS shim so libv86.js can export itself */
+  window.module = { exports: {} };
+  window.exports = window.module.exports;
+</script>
+
+<script src="libv86.js"
+  onload="log('libv86.js loaded successfully.', 'success')"
+  onerror="log('libv86.js failed to load. Make sure the file exists.', 'error')">
+</script>
+
+<script>
+  function startEmulatorWithConfig(cdromConfig) {
+    setStatus('Loading AurionOS...', 'loading');
+    document.getElementById('file_selector').style.display = 'none';
+
+    var Emulator = window.V86Starter || window.V86
+      || (window.module && window.module.exports && (window.module.exports.V86Starter || window.module.exports.V86));
+    if (!Emulator && window.module && window.module.exports && typeof window.module.exports === 'function')
+      Emulator = window.module.exports;
+
+    if (!Emulator) {
+      log('Cannot start — V86 constructor not found.', 'error');
+      setStatus('V86 library not loaded.', 'error');
+      showToast('V86 library failed to load', 'error');
+      document.getElementById('file_selector').style.display = 'block';
+      return;
+    }
+
+    var settings = {
+      wasm_path:       'v86.wasm',
+      memory_size:     512 * 1024 * 1024,
+      vga_memory_size:  64 * 1024 * 1024,
+      screen_container: document.getElementById('screen_container'),
+      bios:    { url: 'seabios.bin' },
+      vga_bios: { url: 'vgabios.bin' },
+      autostart: true
+    };
+
+    if (cdromConfig.url)  settings.cdrom = { url: cdromConfig.url };
+    else if (cdromConfig.file) settings.cdrom = { file: cdromConfig.file };
+
+    try {
+      log('Creating emulator instance...');
+      emulatorInstance = new Emulator(settings);
+
+      emulatorInstance.add_listener('emulator-ready', function () {
+        emulatorReady = true;
+        setStatus('AurionOS is running.', 'running');
+        hideLoadingScreen();
+        document.getElementById('screen_wrapper').classList.add('running');
+        log('Emulator ready — AurionOS is booting.', 'success');
+        showToast('AurionOS is running — click the screen to take control', 'success');
+        showClickToFocus();
+      });
+
+      emulatorInstance.add_listener('emulator-stopped', function () {
+        emulatorReady = false;
+        setStatus('Emulator stopped.', 'error');
+        log('Emulator stopped.', 'warn');
+        hideClickToFocus();
+      });
+
+      /* Keep canvas visible — v86 may toggle display:none on it */
+      var screenContainer = document.getElementById('screen_container');
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === 'childList') {
+            screenContainer.querySelectorAll('canvas').forEach(function (c) { c.style.display = 'block'; });
+          }
+          if (mutation.type === 'attributes' && mutation.target.tagName === 'CANVAS') {
+            mutation.target.style.display = 'block';
+          }
+        });
+      });
+      observer.observe(screenContainer, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+      screenContainer.querySelectorAll('canvas').forEach(function (c) { c.style.display = 'block'; });
+
+    } catch (e) {
+      log('Emulator initialization failed: ' + e.message, 'error');
+      setStatus('Failed to start emulator.', 'error');
+      showToast('Emulator failed to start: ' + e.message, 'error');
+      document.getElementById('file_selector').style.display = 'block';
+    }
+  }
+
+  window.onload = function () {
+    log('Page loaded. Starting initialization...');
+    hideClickToFocus();
+
+    setTimeout(function () {
+      var Emulator = window.V86Starter || window.V86
+        || (window.module && window.module.exports && (window.module.exports.V86Starter || window.module.exports.V86));
+      if (!Emulator && window.module && window.module.exports && typeof window.module.exports === 'function')
+        Emulator = window.module.exports;
+
+      if (!Emulator) {
+        log('V86 constructor not found.', 'error');
+        setStatus('V86 library failed to load.', 'error');
+        showToast('V86 library is missing', 'error');
+        return;
+      }
+
+      log('V86 library found. Starting ISO check...', 'success');
+      var isoUrl = 'aurionos_debug.iso?t=' + Date.now();
+      log('Checking for ISO at: ' + isoUrl);
+
+      fetch(isoUrl, { method: 'HEAD' })
+        .then(function (response) {
+          if (response.ok) {
+            var sizeHeader = response.headers.get('content-length');
+            var sizeStr = sizeHeader ? formatBytes(parseInt(sizeHeader)) : 'unknown size';
+            log('ISO found (' + sizeStr + '). Starting automatic load.', 'success');
+            startEmulatorWithConfig({ url: isoUrl });
+          } else {
+            log('ISO not found (HTTP ' + response.status + ').', 'warn');
+            setStatus('ISO not found. Select file manually.', 'error');
+            document.getElementById('file_selector').style.display = 'block';
+          }
+        })
+        .catch(function (err) {
+          log('Fetch check failed: ' + (err.message || 'unknown') + '. Attempting direct load...', 'warn');
+          startEmulatorWithConfig({ url: isoUrl });
+          setTimeout(function () {
+            if (!emulatorReady) {
+              log('Direct load appears to have failed. Showing file selector.', 'warn');
+              setStatus('Load failed. Select file manually.', 'error');
+              document.getElementById('file_selector').style.display = 'block';
             }
-
-            document.addEventListener('pointerlockchange', onPointerLockChange, false);
-            document.addEventListener('mozpointerlockchange', onPointerLockChange, false);
-            document.addEventListener('webkitpointerlockchange', onPointerLockChange, false);
-
-            document.addEventListener('pointerlockerror', function (e) {
-                pointerLockAttempts++;
-                log('=== POINTER LOCK ERROR ===', 'error');
-                log('Attempt: ' + pointerLockAttempts, 'error');
-                log('Permission Status: DENIED or BLOCKED', 'error');
-                log('Browser may require user gesture or permission', 'error');
-                log('========================', 'error');
-
-                if (pointerLockAttempts === 1) {
-                    showToast('Mouse capture failed - click the screen again to retry', 'warn');
-                } else if (pointerLockAttempts === 2) {
-                    showToast('Still cannot capture mouse - check browser permissions', 'error');
-                    log('Firefox on Linux may block pointer lock. Check about:config for full-screen-api.allow-trusted-requests-only', 'warn');
-                } else {
-                    showToast('Mouse capture blocked by browser - see debug console', 'error');
-                }
-            }, false);
-
-            document.addEventListener('mozpointerlockerror', function (e) {
-                log('Mozilla-specific pointer lock error. This may be a Firefox permission issue.', 'error');
-            }, false);
-
-            document.addEventListener('webkitpointerlockerror', function (e) {
-                log('WebKit-specific pointer lock error.', 'error');
-            }, false);
-
-            /* Clicking the overlay requests pointer lock */
-            if (clickOverlay) {
-                clickOverlay.addEventListener('click', function (e) {
-                    if (!emulatorReady) {
-                        log('Cannot request pointer lock - emulator not ready yet.', 'warn');
-                        return;
-                    }
-
-                    if (!screenContainer) {
-                        log('Cannot request pointer lock - screen container not found.', 'error');
-                        return;
-                    }
-
-                    var now = Date.now();
-                    if (now - lastAttemptTime < 500) {
-                        log('Pointer lock request throttled - wait a moment between clicks.', 'warn');
-                        return;
-                    }
-                    lastAttemptTime = now;
-
-                    /* Try to get the canvas element directly for better compatibility */
-                    var canvas = screenContainer.querySelector('canvas');
-                    var targetElement = canvas || screenContainer;
-
-                    log('Requesting pointer lock on ' + (canvas ? 'canvas' : 'container') + '...', 'info');
-
-                    /* Normalize the requestPointerLock method */
-                    targetElement.requestPointerLock =
-                        targetElement.requestPointerLock ||
-                        targetElement.mozRequestPointerLock ||
-                        targetElement.webkitRequestPointerLock;
-
-                    if (targetElement.requestPointerLock) {
-                        try {
-                            /* Call with empty options for better compatibility */
-                            var promise = targetElement.requestPointerLock();
-
-                            /* Modern browsers return a promise */
-                            if (promise && promise.then) {
-                                promise.then(function () {
-                                    log('Pointer lock promise resolved.', 'success');
-                                }).catch(function (err) {
-                                    log('Pointer lock promise rejected: ' + err.message, 'error');
-                                    showToast('Browser denied mouse capture: ' + err.message, 'error');
-                                });
-                            }
-                        } catch (err) {
-                            log('Exception requesting pointer lock: ' + err.message, 'error');
-                            showToast('Failed to request mouse capture: ' + err.message, 'error');
-                        }
-                    } else {
-                        log('Pointer Lock API not supported by this browser.', 'error');
-                        showToast('Your browser does not support mouse capture', 'error');
-                    }
-                });
-            }
-
-            /* Also try to lock on canvas click directly */
-            screenContainer.addEventListener('click', function (e) {
-                if (isPointerLocked || !emulatorReady) return;
-
-                var canvas = screenContainer.querySelector('canvas');
-                if (canvas && e.target === canvas) {
-                    log('Direct canvas click detected, requesting pointer lock...', 'info');
-                    var targetElement = canvas;
-
-                    targetElement.requestPointerLock =
-                        targetElement.requestPointerLock ||
-                        targetElement.mozRequestPointerLock ||
-                        targetElement.webkitRequestPointerLock;
-
-                    if (targetElement.requestPointerLock) {
-                        try {
-                            targetElement.requestPointerLock();
-                        } catch (err) {
-                            log('Canvas click pointer lock failed: ' + err.message, 'warn');
-                        }
-                    }
-                }
-            }, false);
-        })();
-
-        document.addEventListener('keydown', function (e) {
-            if (isPointerLocked) return;
-
-            if (e.key === 'Escape') {
-                if (isFullscreen) toggleFullscreen();
-                document.getElementById('shortcuts_overlay').classList.remove('visible');
-            }
-            if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
-            if (e.key === '?' && !e.ctrlKey && !e.altKey) {
-                var tag = (e.target.tagName || '').toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea') showShortcuts();
-            }
-            if (e.key === '`' && e.ctrlKey) { e.preventDefault(); toggleDebug(); }
-            if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); scrollToEmulator(); }
+          }, 8000);
         });
 
-        function showToast(message, type) {
-            type = type || 'info';
-            var container = document.getElementById('toast_container');
-            var toast = document.createElement('div');
-            toast.className = 'toast toast-' + type;
-            var iconPaths = {
-                success: '<circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/>',
-                error: '<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>',
-                info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
-                warn: '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/>'
-            };
-            toast.innerHTML = '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (iconPaths[type] || iconPaths.info) + '</svg><span>' + message + '</span>';
-            container.appendChild(toast);
-            setTimeout(function () {
-                toast.classList.add('leaving');
-                setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
-            }, 4000);
-        }
-
-        function toggleDebug() {
-            var logEl = document.getElementById('debug_log');
-            var btn = document.getElementById('debug_toggle');
-            var isVisible = logEl.classList.toggle('visible');
-            btn.classList.toggle('open', isVisible);
-        }
-
-        function setStatus(text, state) {
-            var statusEl = document.getElementById('status');
-            var dot = document.getElementById('status_dot');
-            var toolbarDot = document.getElementById('toolbar_dot');
-            var toolbarText = document.getElementById('toolbar_status_text');
-            var loadingText = document.getElementById('loading_text');
-            statusEl.textContent = text;
-            dot.className = 'status-dot';
-            if (state) dot.classList.add(state);
-            if (toolbarDot) { toolbarDot.className = 'mini-dot'; if (state === 'running') toolbarDot.classList.add('active'); }
-            if (toolbarText) toolbarText.textContent = text;
-            if (loadingText) loadingText.textContent = text;
-        }
-
-        function hideLoadingScreen() {
-            var loadingScreen = document.getElementById('screen_loading');
-            if (loadingScreen) {
-                loadingScreen.classList.add('hidden');
-                setTimeout(function () { if (loadingScreen.parentNode) loadingScreen.parentNode.removeChild(loadingScreen); }, 600);
-            }
-        }
-
-        function log(msg, level) {
-            level = level || 'info';
-            console.log('[V86] [' + level + ']', msg);
-            var debug = document.getElementById('debug_log');
-            if (!debug) return;
-            var time = new Date().toLocaleTimeString();
-            var entry = document.createElement('div');
-            entry.className = 'log-entry';
-            var timeSpan = document.createElement('span');
-            timeSpan.className = 'log-time';
-            timeSpan.textContent = '[' + time + '] ';
-            entry.appendChild(timeSpan);
-            var msgSpan = document.createElement('span');
-            if (level === 'error') msgSpan.className = 'log-error';
-            else if (level === 'success') msgSpan.className = 'log-success';
-            else if (level === 'warn') msgSpan.className = 'log-warn';
-            msgSpan.textContent = msg;
-            entry.appendChild(msgSpan);
-            debug.appendChild(entry);
-            debug.scrollTop = debug.scrollHeight;
-        }
-
-        window.onerror = function (msg, url, line) {
-            log('JS Error: ' + msg + ' (line ' + line + ')', 'error');
-        };
-
-        (function () {
-            var dropZone = document.getElementById('drop_zone');
-            if (!dropZone) return;
-            var preventDefaults = function (e) { e.preventDefault(); e.stopPropagation(); };
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (ev) { dropZone.addEventListener(ev, preventDefaults, false); });
-            ['dragenter', 'dragover'].forEach(function (ev) { dropZone.addEventListener(ev, function () { dropZone.classList.add('drag-over'); }, false); });
-            ['dragleave', 'drop'].forEach(function (ev) { dropZone.addEventListener(ev, function () { dropZone.classList.remove('drag-over'); }, false); });
-            dropZone.addEventListener('drop', function (e) {
-                var files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    var file = files[0];
-                    log('File dropped: ' + file.name + ' (' + formatBytes(file.size) + ')');
-                    if (file.name.toLowerCase().endsWith('.iso')) startEmulatorWithConfig({ file: file });
-                    else { showToast('Please drop an .iso file', 'error'); log('Rejected file - not an ISO: ' + file.name, 'warn'); }
-                }
-            }, false);
-        })();
-
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            var sizes = ['B', 'KB', 'MB', 'GB'];
-            var i = Math.floor(Math.log(bytes) / Math.log(1024));
-            return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-        }
-
-        function restartEmulator() {
-            if (emulatorInstance && emulatorReady) {
-                log('Restarting emulator...'); showToast('Restarting AurionOS...', 'info'); emulatorInstance.restart();
-            } else { log('Cannot restart - emulator not ready.', 'warn'); showToast('Emulator is not ready yet', 'warn'); }
-        }
-
-        window.module = { exports: {} };
-        window.exports = window.module.exports;
-    </script>
-
-    <script src="libv86.js" onload="log('libv86.js loaded successfully.', 'success')"
-        onerror="log('libv86.js failed to load. Make sure the file exists in the v86-web directory.', 'error')"></script>
-
-    <script>
-        function startEmulatorWithConfig(cdromConfig) {
-            setStatus('Loading AurionOS...', 'loading');
-            document.getElementById('file_selector').style.display = 'none';
-
-            var Emulator = window.V86Starter || window.V86 || (window.module && window.module.exports && (window.module.exports.V86Starter || window.module.exports.V86));
-            if (!Emulator && window.module && window.module.exports && typeof window.module.exports === 'function') Emulator = window.module.exports;
-
-            if (!Emulator) {
-                log('Cannot start - V86 constructor not found.', 'error');
-                setStatus('V86 library not loaded.', 'error');
-                showToast('V86 library failed to load', 'error');
-                document.getElementById('file_selector').style.display = 'block';
-                return;
-            }
-
-            var settings = {
-                wasm_path: 'v86.wasm',
-                memory_size: 512 * 1024 * 1024,
-                vga_memory_size: 64 * 1024 * 1024,
-                screen_container: document.getElementById('screen_container'),
-                bios: { url: 'seabios.bin' },
-                vga_bios: { url: 'vgabios.bin' },
-                autostart: true,
-                disable_mouse: false,  /* Explicitly enable mouse */
-                disable_keyboard: false  /* Explicitly enable keyboard */
-            };
-
-            if (cdromConfig.url) settings.cdrom = { url: cdromConfig.url };
-            else if (cdromConfig.file) settings.cdrom = { file: cdromConfig.file };
-
-            try {
-                log('Creating emulator instance...');
-                emulatorInstance = new Emulator(settings);
-
-                emulatorInstance.add_listener('emulator-ready', function () {
-                    emulatorReady = true;
-                    setStatus('AurionOS is running.', 'running');
-                    hideLoadingScreen();
-                    document.getElementById('screen_wrapper').classList.add('running');
-                    log('Emulator ready - AurionOS is booting.', 'success');
-                    showToast('AurionOS is running - click the screen to take control', 'success');
-
-                    /* Show the click-to-focus overlay once the emulator is ready */
-                    showClickToFocus();
-
-                    /* Add mouse event debugging */
-                    log('=== MOUSE EVENT DEBUGGING ENABLED ===', 'info');
-                    var screenContainer = document.getElementById('screen_container');
-                    var canvas = screenContainer ? screenContainer.querySelector('canvas') : null;
-
-                    if (canvas) {
-                        log('Canvas found for mouse event monitoring', 'success');
-
-                        /* Monitor all mouse events on canvas - PASSIVE mode to not interfere with V86 */
-                        ['mousedown', 'mouseup', 'click', 'contextmenu', 'mousemove'].forEach(function (eventType) {
-                            canvas.addEventListener(eventType, function (e) {
-                                if (isPointerLocked) {
-                                    var buttonName = ['LEFT', 'MIDDLE', 'RIGHT'][e.button] || 'UNKNOWN';
-                                    log('Mouse Event: ' + eventType.toUpperCase() + ' - Button: ' + buttonName + ' (' + e.button + ') - Locked: YES', 'info');
-                                }
-                                /* DO NOT preventDefault or stopPropagation - let V86 handle the event */
-                            }, false); /* Changed from true to false - use bubble phase, not capture */
-                        });
-
-                        /* Explicit mouse button forwarding for Linux/Firefox compatibility */
-                        log('Setting up explicit mouse button forwarding...', 'info');
-                        canvas.addEventListener('mousedown', function (e) {
-                            if (isPointerLocked && emulatorInstance && emulatorInstance.bus) {
-                                log('Forwarding MOUSEDOWN to V86 bus - Button: ' + e.button, 'info');
-                                try {
-                                    emulatorInstance.bus.send('mouse-click', [e.button, true]);
-                                } catch (err) {
-                                    log('Failed to forward mousedown: ' + err.message, 'error');
-                                }
-                            }
-                        }, false);
-
-                        canvas.addEventListener('mouseup', function (e) {
-                            if (isPointerLocked && emulatorInstance && emulatorInstance.bus) {
-                                log('Forwarding MOUSEUP to V86 bus - Button: ' + e.button, 'info');
-                                try {
-                                    emulatorInstance.bus.send('mouse-click', [e.button, false]);
-                                } catch (err) {
-                                    log('Failed to forward mouseup: ' + err.message, 'error');
-                                }
-                            }
-                        }, false);
-
-                        /* Monitor pointer lock state changes */
-                        document.addEventListener('pointerlockchange', function () {
-                            var locked = document.pointerLockElement !== null;
-                            log('Pointer Lock State Changed: ' + (locked ? 'LOCKED' : 'UNLOCKED'), locked ? 'success' : 'warn');
-                            if (locked) {
-                                log('Mouse events should now be captured by emulator', 'success');
-                            }
-                        });
-
-                    } else {
-                        log('WARNING: Canvas not found for mouse event monitoring', 'error');
-                    }
-
-                    log('====================================', 'info');
-                });
-
-                emulatorInstance.add_listener('emulator-stopped', function () {
-                    emulatorReady = false;
-                    setStatus('Emulator stopped.', 'error');
-                    log('Emulator stopped.', 'warn');
-                    hideClickToFocus();
-                });
-
-                /* Native resolution: only set display:block, no size overrides */
-                var screenContainer = document.getElementById('screen_container');
-                var observer = new MutationObserver(function (mutations) {
-                    mutations.forEach(function (mutation) {
-                        if (mutation.type === 'childList') {
-                            var canvases = screenContainer.querySelectorAll('canvas');
-                            canvases.forEach(function (c) { c.style.display = 'block'; });
-                        }
-                        if (mutation.type === 'attributes' && mutation.target.tagName === 'CANVAS') {
-                            mutation.target.style.display = 'block';
-                        }
-                    });
-                });
-
-                observer.observe(screenContainer, {
-                    childList: true,
-                    subtree: true,
-                    attributes: true,
-                    attributeFilter: ['width', 'height', 'style']
-                });
-
-                var existingCanvases = screenContainer.querySelectorAll('canvas');
-                existingCanvases.forEach(function (c) { c.style.display = 'block'; });
-
-            } catch (e) {
-                log('Emulator initialization failed: ' + e.message, 'error');
-                setStatus('Failed to start emulator.', 'error');
-                showToast('Emulator failed to start: ' + e.message, 'error');
-                document.getElementById('file_selector').style.display = 'block';
-            }
-        }
-
-        window.onload = function () {
-            log('Page loaded. Starting initialization...');
-
-            /* Detect browser and OS for pointer lock compatibility warnings */
-            var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-            var isLinux = navigator.platform.toLowerCase().indexOf('linux') > -1;
-            var userAgent = navigator.userAgent;
-
-            log('=== BROWSER DIAGNOSTICS ===', 'info');
-            log('User Agent: ' + userAgent, 'info');
-            log('Platform: ' + navigator.platform, 'info');
-            log('Browser: ' + (isFirefox ? 'Firefox' : 'Other'), 'info');
-            log('OS: ' + (isLinux ? 'Linux' : 'Other'), 'info');
-            log('Pointer Lock API: ' + (document.body.requestPointerLock ? 'SUPPORTED' : 'NOT SUPPORTED'), 'success');
-            log('=========================', 'info');
-
-            if (isFirefox && isLinux) {
-                log('Firefox on Linux detected. Pointer lock may require additional permissions.', 'warn');
-                log('If mouse capture fails, check Firefox settings: about:config -> full-screen-api.allow-trusted-requests-only', 'info');
-                showToast('Firefox on Linux detected - mouse capture may need extra clicks', 'info');
-            }
-
-            /* Hide click-to-focus until emulator is ready */
-            hideClickToFocus();
-
-            setTimeout(function () {
-                var Emulator = window.V86Starter || window.V86 || (window.module && window.module.exports && (window.module.exports.V86Starter || window.module.exports.V86));
-                if (!Emulator && window.module && window.module.exports && typeof window.module.exports === 'function') Emulator = window.module.exports;
-
-                if (!Emulator) {
-                    var v8Keys = Object.keys(window).filter(function (k) { return k.indexOf('V8') !== -1; });
-                    log('V86 constructor not found. Searched globals: ' + (v8Keys.join(', ') || 'none'), 'error');
-                    setStatus('V86 library failed to load.', 'error');
-                    showToast('V86 library is missing', 'error');
-                    return;
-                }
-
-                log('V86 library found. Constructor type: ' + typeof Emulator, 'success');
-
-                var isoUrl = 'aurionos_debug.iso?t=' + Date.now();
-                log('Checking for ISO at: ' + isoUrl);
-
-                fetch(isoUrl, { method: 'HEAD' })
-                    .then(function (response) {
-                        if (response.ok) {
-                            var sizeHeader = response.headers.get('content-length');
-                            var sizeStr = sizeHeader ? formatBytes(parseInt(sizeHeader)) : 'unknown size';
-                            log('ISO found (' + sizeStr + '). Starting automatic load.', 'success');
-                            startEmulatorWithConfig({ url: isoUrl });
-                        } else {
-                            log('ISO not found at expected path (HTTP ' + response.status + ').', 'warn');
-                            setStatus('ISO not found. Select file manually.', 'error');
-                            document.getElementById('file_selector').style.display = 'block';
-                        }
-                    })
-                    .catch(function (err) {
-                        log('Fetch failed: ' + (err.message || 'unknown error') + '. Attempting direct load...', 'warn');
-                        startEmulatorWithConfig({ url: isoUrl });
-                        setTimeout(function () {
-                            if (!emulatorReady) {
-                                log('Direct load appears to have failed. Showing file selector.', 'warn');
-                                setStatus('Load failed. Select file manually.', 'error');
-                                document.getElementById('file_selector').style.display = 'block';
-                            }
-                        }, 8000);
-                    });
-
-                var isoInput = document.getElementById('iso_file');
-                if (isoInput) {
-                    isoInput.addEventListener('change', function () {
-                        if (this.files.length) {
-                            log('File selected: ' + this.files[0].name + ' (' + formatBytes(this.files[0].size) + ')');
-                            startEmulatorWithConfig({ file: this.files[0] });
-                        }
-                    });
-                }
-            }, 500);
-        };
-
-        (function () {
-            if (!('IntersectionObserver' in window)) return;
-            var cards = document.querySelectorAll('.feature-card, .info-card');
-            var observer = new IntersectionObserver(function (entries) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-            cards.forEach(function (card) {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(16px)';
-                card.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
-                observer.observe(card);
-            });
-        })();
-
-        window.addEventListener('beforeunload', function (e) {
-            if (emulatorReady) {
-                e.preventDefault();
-                e.returnValue = 'AurionOS is still running. Are you sure you want to leave?';
-                return e.returnValue;
-            }
+      var isoInput = document.getElementById('iso_file');
+      if (isoInput) {
+        isoInput.addEventListener('change', function () {
+          if (this.files.length) {
+            log('File selected: ' + this.files[0].name + ' (' + formatBytes(this.files[0].size) + ')');
+            startEmulatorWithConfig({ file: this.files[0] });
+          }
         });
-    </script>
+      }
+    }, 500);
+  };
+
+  /* ── Scroll-in animation for cards ── */
+  (function () {
+    if (!('IntersectionObserver' in window)) return;
+    var cards = document.querySelectorAll('.feature-card, .info-card');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    cards.forEach(function (card) {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(16px)';
+      card.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+      observer.observe(card);
+    });
+  })();
+
+  /* ── Leave-page warning while emulator is running ── */
+  window.addEventListener('beforeunload', function (e) {
+    if (emulatorReady) {
+      e.preventDefault();
+      e.returnValue = 'AurionOS is still running. Are you sure you want to leave?';
+      return e.returnValue;
+    }
+  });
+</script>
+
 </body>
-
 </html>
