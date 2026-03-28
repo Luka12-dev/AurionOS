@@ -30,6 +30,7 @@ static int js_strcmp(const char *a, const char *b) {
     return *(unsigned char *)a - *(unsigned char *)b;
 }
 
+static bool js_strncmp(const char *a, const char *b, int n) __attribute__((unused));
 static bool js_strncmp(const char *a, const char *b, int n) {
     if (!a || !b) return false;
     for (int i = 0; i < n; i++) {
@@ -347,12 +348,14 @@ static JSValue js_make_undefined(void) {
     return val;
 }
 
+static JSValue js_make_null(void) __attribute__((unused));
 static JSValue js_make_null(void) {
     JSValue val;
     val.type = VAL_NULL;
     return val;
 }
 
+static JSValue js_make_bool(bool b) __attribute__((unused));
 static JSValue js_make_bool(bool b) {
     JSValue val;
     val.type = VAL_BOOL;
@@ -360,6 +363,7 @@ static JSValue js_make_bool(bool b) {
     return val;
 }
 
+static JSValue js_make_number(double n) __attribute__((unused));
 static JSValue js_make_number(double n) {
     JSValue val;
     val.type = VAL_NUMBER;
@@ -367,6 +371,7 @@ static JSValue js_make_number(double n) {
     return val;
 }
 
+static JSValue js_make_string(const char *s) __attribute__((unused));
 static JSValue js_make_string(const char *s) {
     JSValue val;
     val.type = VAL_STRING;
@@ -374,6 +379,7 @@ static JSValue js_make_string(const char *s) {
     return val;
 }
 
+static JSValue js_make_object(void) __attribute__((unused));
 static JSValue js_make_object(void) {
     JSValue val;
     val.type = VAL_OBJECT;
@@ -387,6 +393,7 @@ static JSValue js_make_object(void) {
     return val;
 }
 
+static JSValue js_make_array(void) __attribute__((unused));
 static JSValue js_make_array(void) {
     JSValue val;
     val.type = VAL_ARRAY;
@@ -400,6 +407,7 @@ static JSValue js_make_array(void) {
     return val;
 }
 
+static JSValue js_make_error(const char *message) __attribute__((unused));
 static JSValue js_make_error(const char *message) {
     JSValue val;
     val.type = VAL_ERROR;
@@ -419,6 +427,7 @@ static JSValue js_make_error(const char *message) {
     return val;
 }
 
+static JSValue js_make_native_func(NativeFunc func) __attribute__((unused));
 static JSValue js_make_native_func(NativeFunc func) {
     JSValue val;
     val.type = VAL_NATIVE_FUNC;
@@ -463,6 +472,7 @@ static void js_free_value(JSValue *val) {
     }
 }
 
+static bool js_to_bool(JSValue *val) __attribute__((unused));
 static bool js_to_bool(JSValue *val) {
     if (!val) return false;
     switch (val->type) {
@@ -480,6 +490,7 @@ static bool js_to_bool(JSValue *val) {
     }
 }
 
+static double js_to_number(JSValue *val) __attribute__((unused));
 static double js_to_number(JSValue *val) {
     if (!val) return 0.0;
     switch (val->type) {
@@ -573,6 +584,7 @@ static double js_to_number(JSValue *val) {
     }
 }
 
+static char *js_to_string(JSValue *val) __attribute__((unused));
 static char *js_to_string(JSValue *val) {
     static char buf[1024];
     if (!val) {
@@ -709,6 +721,7 @@ static char *js_to_string(JSValue *val) {
     return buf;
 }
 
+static void js_init_lexer(Lexer *lex, const char *input) __attribute__((unused));
 static void js_init_lexer(Lexer *lex, const char *input) {
     lex->input = input;
     lex->pos = 0;
@@ -796,6 +809,7 @@ static TokenType js_check_keyword(const char *str) {
     return TOK_IDENT;
 }
 
+static Token js_next_token(Lexer *lex) __attribute__((unused));
 static Token js_next_token(Lexer *lex) {
     Token tok;
     tok.type = TOK_EOF;
@@ -1131,6 +1145,7 @@ static Token js_next_token(Lexer *lex) {
 
 /* SCOPE AND VARIABLE MANAGEMENT */
 
+static JSScope *js_create_scope(JSScope *parent) __attribute__((unused));
 static JSScope *js_create_scope(JSScope *parent) {
     JSScope *scope = (JSScope *)kmalloc(sizeof(JSScope));
     if (scope) {
@@ -1141,6 +1156,7 @@ static JSScope *js_create_scope(JSScope *parent) {
     return scope;
 }
 
+static void js_free_scope(JSScope *scope) __attribute__((unused));
 static void js_free_scope(JSScope *scope) {
     if (!scope) return;
     JSVar *var = scope->vars;
@@ -1168,6 +1184,7 @@ static JSVar *js_find_var(JSScope *scope, const char *name) {
     return NULL;
 }
 
+static void js_set_var(JSScope *scope, const char *name, JSValue value, bool is_const) __attribute__((unused));
 static void js_set_var(JSScope *scope, const char *name, JSValue value, bool is_const) {
     JSVar *var = js_find_var(scope, name);
     if (var) {
