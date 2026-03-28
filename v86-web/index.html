@@ -2412,6 +2412,23 @@ make all</code>
                             }
                         }, false);
 
+                        /* CRITICAL: Explicit mouse MOVEMENT forwarding for Linux/Firefox */
+                        log('Setting up explicit mouse MOVEMENT forwarding...', 'info');
+                        canvas.addEventListener('mousemove', function (e) {
+                            if (isPointerLocked && emulatorInstance && emulatorInstance.bus) {
+                                var dx = e.movementX || 0;
+                                var dy = e.movementY || 0;
+                                if (dx !== 0 || dy !== 0) {
+                                    log('Forwarding MOUSEMOVE to V86 bus - dx: ' + dx + ', dy: ' + dy, 'info');
+                                    try {
+                                        emulatorInstance.bus.send('mouse-delta', [dx, dy]);
+                                    } catch (err) {
+                                        log('Failed to forward mousemove: ' + err.message, 'error');
+                                    }
+                                }
+                            }
+                        }, false);
+
                         /* Monitor pointer lock state changes */
                         document.addEventListener('pointerlockchange', function () {
                             var locked = document.pointerLockElement !== null;
