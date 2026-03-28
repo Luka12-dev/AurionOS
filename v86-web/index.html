@@ -10,7 +10,6 @@
 
         :root {
             --bg: #000000;
-            --bg-raised: #060606;
             --surface: #0a0a0a;
             --surface-hover: #0f0f0f;
             --border: #1a1a1a;
@@ -25,9 +24,7 @@
             --accent-glow: rgba(212, 149, 42, 0.08);
             --accent-glow-strong: rgba(212, 149, 42, 0.15);
             --error: #c44040;
-            --error-dim: rgba(196, 64, 64, 0.15);
             --success: #4a9e5a;
-            --success-dim: rgba(74, 158, 90, 0.15);
             --warning: #c49340;
             --info: #4a7e9e;
             --space-xs: 4px;
@@ -51,29 +48,22 @@
             --radius: 6px;
             --radius-md: 8px;
             --radius-lg: 12px;
-            --radius-xl: 16px;
             --radius-full: 9999px;
             --transition-fast: 120ms ease-out;
             --transition: 200ms ease-out;
             --transition-slow: 350ms ease-out;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
-            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.7);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.7);
             --shadow-glow: 0 0 40px var(--accent-glow);
         }
 
         html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font-sans);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            line-height: 1.6;
+            background-color: var(--bg); color: var(--text); font-family: var(--font-sans);
+            min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; line-height: 1.6;
         }
 
         ::selection { background: var(--accent); color: #000; }
@@ -149,7 +139,21 @@
         .mouse-lock-banner .lock-text { font-size: 0.82em; color: var(--text-secondary); white-space: nowrap; }
         .mouse-lock-banner kbd { display: inline-block; background: var(--surface); border: 1px solid var(--border-active); padding: 2px 8px; border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.9em; font-weight: 600; color: var(--text); margin: 0 2px; }
 
-        body.pointer-locked, body.pointer-locked * { cursor: none !important; }
+        /*
+         * CURSOR HIDING:
+         * - pointer-locked class: added when pointer lock is active (belt)
+         * - vm-focused class: added on click even if pointer lock fails (suspenders)
+         * Both set cursor: none on everything relevant.
+         */
+        body.pointer-locked,
+        body.pointer-locked * {
+            cursor: none !important;
+        }
+
+        body.vm-focused #screen_container,
+        body.vm-focused #screen_container * {
+            cursor: none !important;
+        }
 
         .main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 80px var(--space-lg) var(--space-2xl); width: 100%; margin: 0 auto; }
 
@@ -180,22 +184,16 @@
         #screen_container canvas { display: block; }
 
         /*
-         * CRITICAL FIX: pointer-events: none
-         * This overlay is PURELY VISUAL. It never intercepts clicks.
-         * The user's real click passes straight through to the canvas
-         * underneath, where v86's own handler fires and calls
-         * requestPointerLock() with a genuine user gesture.
+         * CLICK-TO-FOCUS: pointer-events: none
+         * Purely visual. Clicks pass through to the canvas.
+         * We hide it via JS when the user clicks the canvas.
          */
         .click-to-focus {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 8;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md);
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(2px);
-            cursor: pointer;
-            transition: opacity 0.25s ease-out;
-            border-radius: var(--radius-md);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 8; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: var(--space-md);
+            background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(2px);
+            transition: opacity 0.25s ease-out; border-radius: var(--radius-md);
             pointer-events: none;
         }
         .click-to-focus.hidden { opacity: 0; }
@@ -211,6 +209,7 @@
         .loading-progress-bar { height: 100%; background: var(--accent); border-radius: 1px; width: 0%; transition: width 0.3s ease-out; }
         .loading-progress-bar.indeterminate { width: 30%; animation: shimmer 1.5s ease-in-out infinite; background: linear-gradient(90deg, transparent, var(--accent), transparent); background-size: 200% 100%; }
 
+        /* Toolbar: container is pointer-events:none, buttons are auto */
         .screen-toolbar { position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: linear-gradient(to top, rgba(0,0,0,0.9) 40%, transparent); opacity: 0; transition: opacity 0.3s ease-out; z-index: 10; pointer-events: none; }
         .screen-toolbar > * { pointer-events: auto; }
         .screen-wrapper:hover .screen-toolbar { opacity: 1; }
@@ -237,7 +236,7 @@
         .status-dot.running ~ .status-ring { animation: pulseRing 2s ease-out infinite; }
         #status { font-size: var(--font-size-sm); color: var(--text-dim); transition: color var(--transition); }
         .status-right { display: flex; align-items: center; gap: var(--space-md); }
-        .hint-text { font-size: 0.75em; color: var(--text-faint); transition: opacity var(--transition); }
+        .hint-text { font-size: 0.75em; color: var(--text-faint); }
         .hint-text kbd { display: inline-block; background: var(--surface); border: 1px solid var(--border); padding: 1px 7px; border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.92em; font-weight: 600; color: var(--text-dim); margin: 0 1px; }
 
         #file_selector { display: none; margin-top: var(--space-md); width: 100%; max-width: 1400px; animation: slideDown 0.3s ease-out; }
@@ -331,7 +330,6 @@
             .toast-container { left: var(--space-md); right: var(--space-md); }
             .toast { max-width: 100%; }
         }
-
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.6em; }
             .hero-subtitle { font-size: 0.88em; }
@@ -350,19 +348,10 @@
             </div>
         </a>
         <nav class="nav-links">
-            <button class="nav-link" onclick="scrollToEmulator()" title="Jump to emulator">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                <span>Try it</span>
-            </button>
-            <button class="nav-link" onclick="showShortcuts()" title="Keyboard shortcuts">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h8"/></svg>
-                <span>Shortcuts</span>
-            </button>
+            <button class="nav-link" onclick="scrollToEmulator()" title="Jump to emulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Try it</span></button>
+            <button class="nav-link" onclick="showShortcuts()" title="Keyboard shortcuts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h8"/></svg><span>Shortcuts</span></button>
             <div class="nav-separator"></div>
-            <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="nav-link github-link">
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-                <span>Source</span>
-            </a>
+            <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="nav-link github-link"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>Source</span></a>
         </nav>
     </header>
 
@@ -383,14 +372,8 @@
                 <span>For the real experience, run AurionOS in VirtualBox or on actual hardware.</span>
             </div>
             <div class="startup-actions">
-                <button class="btn-primary" onclick="dismissOverlay()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    Start emulator
-                </button>
-                <a href="https://github.com/Luka12-dev/AurionOS/releases" target="_blank" rel="noopener" class="btn-ghost">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Download ISO
-                </a>
+                <button class="btn-primary" onclick="dismissOverlay()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Start emulator</button>
+                <a href="https://github.com/Luka12-dev/AurionOS/releases" target="_blank" rel="noopener" class="btn-ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download ISO</a>
             </div>
         </div>
     </div>
@@ -415,16 +398,10 @@
             <h1>Try <span class="accent">AurionOS</span><br>right here.</h1>
             <p class="hero-subtitle">A custom operating system running live in your browser through x86 emulation. No downloads, no setup — just click and explore.</p>
             <div class="hero-actions">
-                <button class="btn-primary" onclick="scrollToEmulator()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    Jump to emulator
-                </button>
+                <button class="btn-primary" onclick="scrollToEmulator()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Jump to emulator</button>
                 <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="btn-ghost">View source</a>
             </div>
-            <div class="scroll-indicator">
-                <span>Scroll down</span>
-                <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
+            <div class="scroll-indicator"><span>Scroll down</span><svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
         </section>
 
         <section class="emulator-section" id="emulator_section">
@@ -444,45 +421,24 @@
 
                     <div class="screen-loading" id="screen_loading">
                         <img src="AurionOS.png" alt="" class="loading-logo">
-                        <div class="loading-progress-container">
-                            <div class="loading-progress-bar indeterminate" id="loading_progress_bar"></div>
-                        </div>
+                        <div class="loading-progress-container"><div class="loading-progress-bar indeterminate" id="loading_progress_bar"></div></div>
                         <div class="loading-text" id="loading_text">Preparing emulator...</div>
                     </div>
 
                     <div class="screen-toolbar">
-                        <div class="toolbar-left">
-                            <div class="toolbar-status" id="toolbar_status">
-                                <div class="mini-dot" id="toolbar_dot"></div>
-                                <span id="toolbar_status_text">Waiting to start...</span>
-                            </div>
-                        </div>
+                        <div class="toolbar-left"><div class="toolbar-status" id="toolbar_status"><div class="mini-dot" id="toolbar_dot"></div><span id="toolbar_status_text">Waiting to start...</span></div></div>
                         <div class="toolbar-right">
-                            <button class="toolbar-btn" onclick="restartEmulator()" title="Restart emulator">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-                                Restart
-                            </button>
+                            <button class="toolbar-btn" onclick="restartEmulator()" title="Restart emulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restart</button>
                             <div class="toolbar-divider"></div>
-                            <button class="toolbar-btn" onclick="toggleFullscreen()" id="fullscreen_btn" title="Toggle fullscreen (F11)">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
-                                <span id="fullscreen_label">Fullscreen</span>
-                            </button>
+                            <button class="toolbar-btn" onclick="toggleFullscreen()" id="fullscreen_btn" title="Toggle fullscreen (F11)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg><span id="fullscreen_label">Fullscreen</span></button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="status-area">
-                <div class="status-left">
-                    <div class="status-indicator">
-                        <div class="status-dot loading" id="status_dot"></div>
-                        <div class="status-ring" id="status_ring"></div>
-                    </div>
-                    <span id="status">Initializing emulator...</span>
-                </div>
-                <div class="status-right">
-                    <span class="hint-text" id="hint_text">Click the screen to take control — press <kbd>Esc</kbd> to release</span>
-                </div>
+                <div class="status-left"><div class="status-indicator"><div class="status-dot loading" id="status_dot"></div><div class="status-ring" id="status_ring"></div></div><span id="status">Initializing emulator...</span></div>
+                <div class="status-right"><span class="hint-text" id="hint_text">Click the screen to take control — press <kbd>Esc</kbd> to release</span></div>
             </div>
 
             <div id="file_selector">
@@ -499,58 +455,32 @@
         <section class="features-section">
             <div class="section-label"><span>What makes AurionOS different</span></div>
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg></div>
-                    <div class="feature-title">Built from scratch</div>
-                    <div class="feature-desc">Not a Linux distro. Not a fork. Every line of kernel code was written from the ground up.</div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-                    <div class="feature-title">Lightweight and fast</div>
-                    <div class="feature-desc">Minimal footprint. Boots in seconds on real hardware. No bloat, no unnecessary layers.</div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
-                    <div class="feature-title">Open source</div>
-                    <div class="feature-desc">Full source on GitHub. Nothing hidden, nothing proprietary.</div>
-                </div>
+                <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg></div><div class="feature-title">Built from scratch</div><div class="feature-desc">Not a Linux distro. Not a fork. Every line of kernel code written from the ground up.</div></div>
+                <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="feature-title">Lightweight and fast</div><div class="feature-desc">Minimal footprint. Boots in seconds on real hardware. No bloat.</div></div>
+                <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div><div class="feature-title">Open source</div><div class="feature-desc">Full source on GitHub. Nothing hidden, nothing proprietary.</div></div>
             </div>
         </section>
 
         <section class="info-section">
             <div class="section-label"><span>Run it for real</span></div>
             <div class="info-cards">
-                <div class="info-card">
-                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>VirtualBox</h3>
-                    <p>Download the ISO, create a VM with 512MB RAM, attach the ISO, and boot.</p>
-                    <code>Type: Other/Unknown
+                <div class="info-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>VirtualBox</h3><p>Download the ISO, create a VM with 512MB RAM, attach the ISO, and boot.</p><code>Type: Other/Unknown
 RAM: 512 MB
-Storage: Optional</code>
-                </div>
-                <div class="info-card">
-                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>Build from source</h3>
-                    <p>Clone the repo and build it yourself. You need a cross-compiler and NASM.</p>
-                    <code>git clone https://github.com/Luka12-dev/AurionOS.git
+Storage: Optional</code></div>
+                <div class="info-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>Build from source</h3><p>Clone the repo and build it yourself.</p><code>git clone https://github.com/Luka12-dev/AurionOS.git
 cd AurionOS
-make all</code>
-                </div>
+make all</code></div>
             </div>
         </section>
 
         <section class="debug-section">
-            <button class="debug-toggle" id="debug_toggle" onclick="toggleDebug()">
-                <span class="arrow">&#9654;</span>
-                Debug console
-            </button>
+            <button class="debug-toggle" id="debug_toggle" onclick="toggleDebug()"><span class="arrow">&#9654;</span>Debug console</button>
             <div id="debug_log"></div>
         </section>
     </main>
 
     <footer class="footer">
-        <div class="footer-left">
-            <img src="AurionOS.png" alt="">
-            <span>AurionOS — emulated via v86</span>
-        </div>
+        <div class="footer-left"><img src="AurionOS.png" alt=""><span>AurionOS — emulated via v86</span></div>
         <div class="footer-links">
             <a href="https://github.com/Luka12-dev/AurionOS" target="_blank" rel="noopener" class="footer-link">GitHub</a>
             <a href="https://github.com/Luka12-dev/AurionOS/releases" target="_blank" rel="noopener" class="footer-link">Releases</a>
@@ -559,53 +489,11 @@ make all</code>
     </footer>
 
     <script>
-        /*
-         * ================================================================
-         * THE FIX — EXPLAINED SIMPLY
-         * ================================================================
-         *
-         * Problem: Mouse frozen on Linux.
-         *
-         * Root cause: The click-to-focus overlay had pointer-events
-         * enabled, which BLOCKED all mouse events from reaching the
-         * canvas. V86 never received clicks, never triggered pointer
-         * lock, and never got mousemove data.
-         *
-         * On Windows Chrome this "worked" by accident because Chrome
-         * is lenient about event delivery through overlapping elements.
-         * Linux browsers (Firefox, Chrome-on-Wayland) are strict.
-         *
-         * Previous fix attempts tried to:
-         * - Lock pointer on the container div (wrong target)
-         * - Forward synthetic clicks (browsers reject fake gestures)
-         * - Add custom mousemove handlers (mouse_set_position doesn't exist)
-         *
-         * Actual fix:
-         *
-         * 1. The click-to-focus overlay has pointer-events: none (CSS).
-         *    It's purely visual — a hint to the user. Clicks pass
-         *    straight through to the canvas underneath.
-         *
-         * 2. The screen toolbar also has pointer-events: none on its
-         *    container, with pointer-events: auto on child buttons only.
-         *    This prevents the toolbar gradient from blocking canvas clicks.
-         *
-         * 3. V86 handles EVERYTHING: click → requestPointerLock on
-         *    its own canvas → mousemove with movementX/movementY.
-         *    We never call requestPointerLock ourselves.
-         *
-         * 4. We just WATCH for pointerlockchange to update our UI
-         *    (show/hide banner, show/hide overlay hint).
-         *
-         * 5. No custom mousemove handler. No mouse_set_position.
-         *    No sensitivity multiplier. V86 does all mouse processing.
-         * ================================================================
-         */
-
         var emulatorInstance = null;
         var isPointerLocked = false;
         var isFullscreen = false;
         var emulatorReady = false;
+        var vmFocused = false;
 
         function getEmulatorCanvas() {
             var c = document.getElementById('screen_container');
@@ -648,38 +536,73 @@ make all</code>
             var o = document.getElementById('click_to_focus');
             if (o) o.classList.remove('hidden');
         }
-
         function hideClickToFocus() {
             var o = document.getElementById('click_to_focus');
             if (o) o.classList.add('hidden');
         }
 
-        /* Watch pointer lock changes — never initiate them */
+        /*
+         * Focus/unfocus the VM.
+         * "Focus" means: overlay hidden, cursor hidden, pointer locked.
+         * "Unfocus" means: overlay shown, cursor visible, pointer unlocked.
+         */
+        function focusVM() {
+            if (vmFocused) return;
+            vmFocused = true;
+            hideClickToFocus();
+            document.body.classList.add('vm-focused');
+
+            /* Request pointer lock on the canvas */
+            var canvas = getEmulatorCanvas();
+            if (canvas) {
+                var req = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+                if (req) {
+                    try { req.call(canvas); }
+                    catch (e) { log('Pointer lock request failed: ' + e.message, 'warn'); }
+                }
+            }
+
+            log('VM focused — cursor hidden, pointer lock requested');
+        }
+
+        function unfocusVM() {
+            vmFocused = false;
+            document.body.classList.remove('vm-focused');
+            document.body.classList.remove('pointer-locked');
+            if (emulatorReady) showClickToFocus();
+            log('VM unfocused — overlay shown');
+        }
+
+        /*
+         * POINTER LOCK: watch for changes.
+         * When locked → hide cursor (browser does it) + add class.
+         * When unlocked → show overlay + remove class.
+         */
         (function () {
             var banner = document.getElementById('mouse_lock_banner');
-            var body = document.body;
 
             function onPointerLockChange() {
                 var lockEl = document.pointerLockElement || document.mozPointerLockElement;
                 var canvas = getEmulatorCanvas();
                 var container = document.getElementById('screen_container');
-
-                /* Accept lock on canvas OR container (different v86 builds differ) */
                 var locked = lockEl && (lockEl === canvas || lockEl === container);
+
                 isPointerLocked = !!locked;
 
-                log('Pointer lock: ' + (locked
-                    ? 'LOCKED on ' + lockEl.tagName + (lockEl.id ? '#' + lockEl.id : '')
-                    : 'RELEASED'));
-
                 if (locked) {
-                    body.classList.add('pointer-locked');
+                    document.body.classList.add('pointer-locked');
                     banner.classList.add('visible');
                     hideClickToFocus();
+                    vmFocused = true;
+                    log('Pointer LOCKED');
                 } else {
-                    body.classList.remove('pointer-locked');
+                    document.body.classList.remove('pointer-locked');
                     banner.classList.remove('visible');
-                    if (emulatorReady) showClickToFocus();
+                    /* Only unfocus if we were previously focused */
+                    if (vmFocused) {
+                        unfocusVM();
+                    }
+                    log('Pointer UNLOCKED');
                 }
             }
 
@@ -687,21 +610,63 @@ make all</code>
             document.addEventListener('mozpointerlockchange', onPointerLockChange, false);
 
             document.addEventListener('pointerlockerror', function () {
-                log('Pointer lock denied.', 'warn');
-                showToast('Could not capture mouse — click the screen again', 'warn');
-                if (emulatorReady) showClickToFocus();
+                log('Pointer lock denied — using cursor:none fallback', 'warn');
+                /*
+                 * Pointer lock failed, but we still hide the cursor via CSS.
+                 * The vm-focused class on body triggers cursor:none on #screen_container.
+                 * V86 still works in absolute mouse mode.
+                 */
             }, false);
-
             document.addEventListener('mozpointerlockerror', function () {
-                log('Pointer lock denied (Firefox).', 'warn');
-                showToast('Could not capture mouse — click the screen again', 'warn');
-                if (emulatorReady) showClickToFocus();
+                log('Pointer lock denied (Firefox) — using cursor:none fallback', 'warn');
             }, false);
         })();
 
+        /*
+         * CANVAS CLICK HANDLER:
+         * Attached to screen_container so it catches clicks on the canvas
+         * (the overlay has pointer-events:none so clicks pass through).
+         *
+         * On mousedown:
+         * 1. Hide the overlay immediately
+         * 2. Hide the host cursor (via vm-focused class)
+         * 3. Request pointer lock on the canvas
+         *
+         * This is a REAL user gesture so requestPointerLock() will work
+         * on all browsers including Firefox on Linux.
+         */
+        (function () {
+            var sc = document.getElementById('screen_container');
+
+            sc.addEventListener('mousedown', function (e) {
+                if (!emulatorReady) return;
+                if (isPointerLocked) return; /* Already locked */
+
+                /* Focus the VM: hide overlay + cursor, lock pointer */
+                focusVM();
+            });
+        })();
+
+        /*
+         * Click OUTSIDE the emulator → unfocus VM (if pointer lock is not active).
+         * If pointer lock IS active, Esc is the only way to release.
+         */
+        document.addEventListener('mousedown', function (e) {
+            if (!vmFocused) return;
+            if (isPointerLocked) return; /* Esc handles this */
+
+            /* Check if click is inside screen_container */
+            var sc = document.getElementById('screen_container');
+            if (sc && !sc.contains(e.target)) {
+                unfocusVM();
+            }
+        });
+
         document.addEventListener('keydown', function (e) {
             if (isPointerLocked) return;
+
             if (e.key === 'Escape') {
+                if (vmFocused) unfocusVM();
                 if (isFullscreen) toggleFullscreen();
                 document.getElementById('shortcuts_overlay').classList.remove('visible');
             }
@@ -733,21 +698,17 @@ make all</code>
         function toggleDebug() {
             var l = document.getElementById('debug_log');
             var b = document.getElementById('debug_toggle');
-            var v = l.classList.toggle('visible');
-            b.classList.toggle('open', v);
+            b.classList.toggle('open', l.classList.toggle('visible'));
         }
 
         function setStatus(text, state) {
             document.getElementById('status').textContent = text;
             var dot = document.getElementById('status_dot');
-            dot.className = 'status-dot';
-            if (state) dot.classList.add(state);
+            dot.className = 'status-dot'; if (state) dot.classList.add(state);
             var td = document.getElementById('toolbar_dot');
             if (td) { td.className = 'mini-dot'; if (state === 'running') td.classList.add('active'); }
-            var tt = document.getElementById('toolbar_status_text');
-            if (tt) tt.textContent = text;
-            var lt = document.getElementById('loading_text');
-            if (lt) lt.textContent = text;
+            var tt = document.getElementById('toolbar_status_text'); if (tt) tt.textContent = text;
+            var lt = document.getElementById('loading_text'); if (lt) lt.textContent = text;
         }
 
         function hideLoadingScreen() {
@@ -758,67 +719,42 @@ make all</code>
         function log(msg, level) {
             level = level || 'info';
             console.log('[V86] [' + level + ']', msg);
-            var d = document.getElementById('debug_log');
-            if (!d) return;
-            var e = document.createElement('div');
-            e.className = 'log-entry';
-            var ts = document.createElement('span');
-            ts.className = 'log-time';
-            ts.textContent = '[' + new Date().toLocaleTimeString() + '] ';
-            e.appendChild(ts);
+            var d = document.getElementById('debug_log'); if (!d) return;
+            var e = document.createElement('div'); e.className = 'log-entry';
+            var ts = document.createElement('span'); ts.className = 'log-time'; ts.textContent = '[' + new Date().toLocaleTimeString() + '] '; e.appendChild(ts);
             var ms = document.createElement('span');
             if (level === 'error') ms.className = 'log-error';
             else if (level === 'success') ms.className = 'log-success';
             else if (level === 'warn') ms.className = 'log-warn';
-            ms.textContent = msg;
-            e.appendChild(ms);
-            d.appendChild(e);
-            d.scrollTop = d.scrollHeight;
+            ms.textContent = msg; e.appendChild(ms); d.appendChild(e); d.scrollTop = d.scrollHeight;
         }
 
         window.onerror = function (msg, url, line) { log('JS Error: ' + msg + ' (line ' + line + ')', 'error'); };
 
         (function () {
-            var dz = document.getElementById('drop_zone');
-            if (!dz) return;
+            var dz = document.getElementById('drop_zone'); if (!dz) return;
             var pd = function (e) { e.preventDefault(); e.stopPropagation(); };
             ['dragenter','dragover','dragleave','drop'].forEach(function (ev) { dz.addEventListener(ev, pd, false); });
             ['dragenter','dragover'].forEach(function (ev) { dz.addEventListener(ev, function () { dz.classList.add('drag-over'); }, false); });
             ['dragleave','drop'].forEach(function (ev) { dz.addEventListener(ev, function () { dz.classList.remove('drag-over'); }, false); });
             dz.addEventListener('drop', function (e) {
                 var f = e.dataTransfer.files;
-                if (f.length > 0) {
-                    log('Dropped: ' + f[0].name + ' (' + formatBytes(f[0].size) + ')');
-                    if (f[0].name.toLowerCase().endsWith('.iso')) startEmulatorWithConfig({ file: f[0] });
-                    else { showToast('Please drop an .iso file', 'error'); }
-                }
+                if (f.length > 0) { log('Dropped: ' + f[0].name); if (f[0].name.toLowerCase().endsWith('.iso')) startEmulatorWithConfig({ file: f[0] }); else showToast('Please drop an .iso file', 'error'); }
             }, false);
         })();
 
-        function formatBytes(b) {
-            if (b === 0) return '0 B';
-            var s = ['B','KB','MB','GB'];
-            var i = Math.floor(Math.log(b) / Math.log(1024));
-            return (b / Math.pow(1024, i)).toFixed(1) + ' ' + s[i];
-        }
+        function formatBytes(b) { if (b === 0) return '0 B'; var s = ['B','KB','MB','GB']; var i = Math.floor(Math.log(b) / Math.log(1024)); return (b / Math.pow(1024, i)).toFixed(1) + ' ' + s[i]; }
 
         function restartEmulator() {
-            if (emulatorInstance && emulatorReady) {
-                log('Restarting...'); showToast('Restarting AurionOS...', 'info');
-                emulatorInstance.restart();
-            } else {
-                showToast('Emulator not ready', 'warn');
-            }
+            if (emulatorInstance && emulatorReady) { log('Restarting...'); showToast('Restarting...', 'info'); emulatorInstance.restart(); }
+            else showToast('Not ready', 'warn');
         }
 
         window.module = { exports: {} };
         window.exports = window.module.exports;
     </script>
 
-    <script src="libv86.js"
-        onload="log('libv86.js loaded.', 'success')"
-        onerror="log('libv86.js failed to load.', 'error')">
-    </script>
+    <script src="libv86.js" onload="log('libv86.js loaded.', 'success')" onerror="log('libv86.js failed.', 'error')"></script>
 
     <script>
         function startEmulatorWithConfig(cdromConfig) {
@@ -829,11 +765,9 @@ make all</code>
             if (!Emulator && window.module && window.module.exports && typeof window.module.exports === 'function') Emulator = window.module.exports;
 
             if (!Emulator) {
-                log('V86 constructor not found.', 'error');
-                setStatus('V86 library not loaded.', 'error');
-                showToast('V86 library failed to load', 'error');
-                document.getElementById('file_selector').style.display = 'block';
-                return;
+                log('V86 not found.', 'error'); setStatus('V86 not loaded.', 'error');
+                showToast('V86 failed to load', 'error');
+                document.getElementById('file_selector').style.display = 'block'; return;
             }
 
             var settings = {
@@ -862,37 +796,29 @@ make all</code>
                     var canvas = getEmulatorCanvas();
                     if (canvas) {
                         log('Canvas: ' + canvas.width + 'x' + canvas.height, 'success');
-
-                        /* Ensure canvas is focusable so it receives keyboard events */
-                        if (!canvas.hasAttribute('tabindex')) {
-                            canvas.setAttribute('tabindex', '0');
-                        }
+                        if (!canvas.hasAttribute('tabindex')) canvas.setAttribute('tabindex', '0');
                     } else {
-                        log('WARNING: No canvas found!', 'error');
+                        log('No canvas found!', 'error');
                     }
 
-                    log('Emulator ready. Click the screen to take control.', 'success');
-                    showToast('AurionOS is running — click the screen to take control', 'success');
+                    log('Ready. Click the screen to take control.', 'success');
+                    showToast('AurionOS is running — click the screen', 'success');
                     showClickToFocus();
                 });
 
                 emulatorInstance.add_listener('emulator-stopped', function () {
                     emulatorReady = false;
-                    setStatus('Emulator stopped.', 'error');
-                    log('Emulator stopped.', 'warn');
+                    setStatus('Stopped.', 'error');
+                    log('Stopped.', 'warn');
                     hideClickToFocus();
+                    unfocusVM();
                 });
 
-                /* Keep canvas visible */
                 var sc = document.getElementById('screen_container');
                 var obs = new MutationObserver(function (muts) {
                     muts.forEach(function (m) {
-                        if (m.type === 'childList') {
-                            sc.querySelectorAll('canvas').forEach(function (c) { c.style.display = 'block'; });
-                        }
-                        if (m.type === 'attributes' && m.target.tagName === 'CANVAS') {
-                            m.target.style.display = 'block';
-                        }
+                        if (m.type === 'childList') sc.querySelectorAll('canvas').forEach(function (c) { c.style.display = 'block'; });
+                        if (m.type === 'attributes' && m.target.tagName === 'CANVAS') m.target.style.display = 'block';
                     });
                 });
                 obs.observe(sc, { childList: true, subtree: true, attributes: true, attributeFilter: ['width','height','style'] });
@@ -900,8 +826,8 @@ make all</code>
 
             } catch (e) {
                 log('Init failed: ' + e.message, 'error');
-                setStatus('Failed to start.', 'error');
-                showToast('Emulator failed: ' + e.message, 'error');
+                setStatus('Failed.', 'error');
+                showToast('Failed: ' + e.message, 'error');
                 document.getElementById('file_selector').style.display = 'block';
             }
         }
@@ -909,88 +835,42 @@ make all</code>
         window.onload = function () {
             log('Platform: ' + navigator.platform);
             log('UA: ' + navigator.userAgent.substring(0, 120));
-
             hideClickToFocus();
 
             setTimeout(function () {
                 var Emulator = window.V86Starter || window.V86 || (window.module && window.module.exports && (window.module.exports.V86Starter || window.module.exports.V86));
                 if (!Emulator && window.module && window.module.exports && typeof window.module.exports === 'function') Emulator = window.module.exports;
 
-                if (!Emulator) {
-                    log('V86 not found.', 'error');
-                    setStatus('V86 failed to load.', 'error');
-                    showToast('V86 library missing', 'error');
-                    return;
-                }
-
+                if (!Emulator) { log('V86 not found.', 'error'); setStatus('V86 failed.', 'error'); showToast('V86 missing', 'error'); return; }
                 log('V86 found.', 'success');
 
                 var isoUrl = 'aurionos_debug.iso?t=' + Date.now();
                 log('Checking: ' + isoUrl);
 
-                fetch(isoUrl, { method: 'HEAD' })
-                    .then(function (r) {
-                        if (r.ok) {
-                            var sz = r.headers.get('content-length');
-                            log('ISO found (' + (sz ? formatBytes(parseInt(sz)) : '?') + ').', 'success');
-                            startEmulatorWithConfig({ url: isoUrl });
-                        } else {
-                            log('ISO not found (' + r.status + ').', 'warn');
-                            setStatus('ISO not found.', 'error');
-                            document.getElementById('file_selector').style.display = 'block';
-                        }
-                    })
-                    .catch(function (err) {
-                        log('Fetch failed: ' + (err.message || '?'), 'warn');
-                        startEmulatorWithConfig({ url: isoUrl });
-                        setTimeout(function () {
-                            if (!emulatorReady) {
-                                setStatus('Load failed.', 'error');
-                                document.getElementById('file_selector').style.display = 'block';
-                            }
-                        }, 8000);
-                    });
+                fetch(isoUrl, { method: 'HEAD' }).then(function (r) {
+                    if (r.ok) { log('ISO found.', 'success'); startEmulatorWithConfig({ url: isoUrl }); }
+                    else { log('ISO not found (' + r.status + ').', 'warn'); setStatus('ISO not found.', 'error'); document.getElementById('file_selector').style.display = 'block'; }
+                }).catch(function (err) {
+                    log('Fetch error: ' + (err.message || '?'), 'warn');
+                    startEmulatorWithConfig({ url: isoUrl });
+                    setTimeout(function () { if (!emulatorReady) { setStatus('Failed.', 'error'); document.getElementById('file_selector').style.display = 'block'; } }, 8000);
+                });
 
                 var fi = document.getElementById('iso_file');
-                if (fi) {
-                    fi.addEventListener('change', function () {
-                        if (this.files.length) {
-                            log('Selected: ' + this.files[0].name);
-                            startEmulatorWithConfig({ file: this.files[0] });
-                        }
-                    });
-                }
+                if (fi) fi.addEventListener('change', function () { if (this.files.length) { log('Selected: ' + this.files[0].name); startEmulatorWithConfig({ file: this.files[0] }); } });
             }, 500);
         };
 
-        /* Animate cards on scroll */
         (function () {
             if (!('IntersectionObserver' in window)) return;
             var cards = document.querySelectorAll('.feature-card, .info-card');
             var obs = new IntersectionObserver(function (entries) {
-                entries.forEach(function (e) {
-                    if (e.isIntersecting) {
-                        e.target.style.opacity = '1';
-                        e.target.style.transform = 'translateY(0)';
-                        obs.unobserve(e.target);
-                    }
-                });
+                entries.forEach(function (e) { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; obs.unobserve(e.target); } });
             }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-            cards.forEach(function (c) {
-                c.style.opacity = '0';
-                c.style.transform = 'translateY(16px)';
-                c.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
-                obs.observe(c);
-            });
+            cards.forEach(function (c) { c.style.opacity = '0'; c.style.transform = 'translateY(16px)'; c.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out'; obs.observe(c); });
         })();
 
-        window.addEventListener('beforeunload', function (e) {
-            if (emulatorReady) {
-                e.preventDefault();
-                e.returnValue = 'AurionOS is still running.';
-                return e.returnValue;
-            }
-        });
+        window.addEventListener('beforeunload', function (e) { if (emulatorReady) { e.preventDefault(); e.returnValue = 'AurionOS is running.'; return e.returnValue; } });
     </script>
 </body>
 </html>
