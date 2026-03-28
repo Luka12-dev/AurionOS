@@ -486,14 +486,16 @@ static bool check_installed(void) {
     char marker[20];
     marker[0] = 0;
 
+    c_puts("[DESKTOP] Checking installation status...\n");
+
     /* 1. Check RAM filesystem (loaded by cmd_init -> fs_load_from_disk) */
     int found = load_file_content("/installed.sys", marker, 16);
     if (found > 0) {
-        /* c_puts("[DESKTOP] Found /installed.sys in filesystem\n"); */
+        c_puts("[DESKTOP] Found /installed.sys in RAM filesystem - INSTALLED\n");
         return true;
     }
 
-    /* c_puts("[DESKTOP] /installed.sys not in RAM filesystem, checking raw disk...\n"); */
+    c_puts("[DESKTOP] /installed.sys not in RAM filesystem, checking raw disk...\n");
 
     /* 2. Fallback: scan raw HDD sectors at LBA 1000+ for the FSEntry
           containing "/installed.sys". The FSEntry struct stores the filename
@@ -504,11 +506,15 @@ static bool check_installed(void) {
     for (int i = 0; i < 128; i++) {
         if (disk_read_lba(1000 + i, 1, sector) != 0) {
             /* Read failed — stop scanning this direction */
+            c_puts("[DESKTOP] Disk read failed - NOT INSTALLED\n");
             break;
         }
 
         /* Empty entry means end of table */
-        if (sector[0] == 0) break;
+        if (sector[0] == 0) {
+            c_puts("[DESKTOP] Reached end of filesystem table - NOT INSTALLED\n");
+            break;
+        }
 
         /* Check if filename matches "/installed.sys" */
         const char *expected = "/installed.sys";
@@ -519,18 +525,22 @@ static bool check_installed(void) {
                 break;
             }
         }
-        /* c_puts("[DESKTOP] Found /installed.sys on HDD at entry "); */
-        char num[4];
-        num[0] = '0' + (i / 100) % 10;
-        num[1] = '0' + (i / 10) % 10;
-        num[2] = '0' + i % 10;
-        num[3] = 0;
-        /* c_puts(num);
-        c_puts("\n"); */
-        return true;
+        
+        if (match) {
+            c_puts("[DESKTOP] Found /installed.sys on raw disk - INSTALLED\n");
+            char num[4];
+            num[0] = '0' + (i / 100) % 10;
+            num[1] = '0' + (i / 10) % 10;
+            num[2] = '0' + i % 10;
+            num[3] = 0;
+            c_puts("[DESKTOP] Entry index: ");
+            c_puts(num);
+            c_puts("\n");
+            return true;
+        }
     }
     
-    /* c_puts("[DESKTOP] No installation marker found anywhere\n"); */
+    c_puts("[DESKTOP] No installation marker found - NOT INSTALLED\n");
     return false;
 }
 
