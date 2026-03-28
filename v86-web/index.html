@@ -2375,14 +2375,15 @@ make all</code>
                     if (canvas) {
                         log('Canvas found for mouse event monitoring', 'success');
 
-                        /* Monitor all mouse events on canvas */
+                        /* Monitor all mouse events on canvas - PASSIVE mode to not interfere with V86 */
                         ['mousedown', 'mouseup', 'click', 'contextmenu', 'mousemove'].forEach(function (eventType) {
                             canvas.addEventListener(eventType, function (e) {
                                 if (isPointerLocked) {
                                     var buttonName = ['LEFT', 'MIDDLE', 'RIGHT'][e.button] || 'UNKNOWN';
                                     log('Mouse Event: ' + eventType.toUpperCase() + ' - Button: ' + buttonName + ' (' + e.button + ') - Locked: YES', 'info');
                                 }
-                            }, true);
+                                /* DO NOT preventDefault or stopPropagation - let V86 handle the event */
+                            }, false); /* Changed from true to false - use bubble phase, not capture */
                         });
 
                         /* Monitor pointer lock state changes */
