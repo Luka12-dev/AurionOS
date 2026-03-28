@@ -2068,13 +2068,18 @@ make all</code>
                     body.classList.add('pointer-locked');
                     banner.classList.add('visible');
                     hideClickToFocus();
-                    log('Pointer lock acquired successfully.', 'success');
+                    log('=== POINTER LOCK ACQUIRED ===', 'success');
+                    log('Permission Status: GRANTED', 'success');
+                    log('Locked Element: ' + (document.pointerLockElement ? document.pointerLockElement.tagName : 'NONE'), 'success');
+                    log('Mouse events should now work in emulator', 'success');
+                    log('==============================', 'success');
                     pointerLockAttempts = 0;
                 } else {
                     /* Pointer released - restore cursor, show overlay again */
                     body.classList.remove('pointer-locked');
                     banner.classList.remove('visible');
                     if (emulatorReady) showClickToFocus();
+                    log('Pointer lock released', 'info');
                 }
             }
 
@@ -2084,7 +2089,11 @@ make all</code>
 
             document.addEventListener('pointerlockerror', function (e) {
                 pointerLockAttempts++;
-                log('Pointer lock request failed (attempt ' + pointerLockAttempts + '). Browser may require user gesture or permission.', 'warn');
+                log('=== POINTER LOCK ERROR ===', 'error');
+                log('Attempt: ' + pointerLockAttempts, 'error');
+                log('Permission Status: DENIED or BLOCKED', 'error');
+                log('Browser may require user gesture or permission', 'error');
+                log('========================', 'error');
 
                 if (pointerLockAttempts === 1) {
                     showToast('Mouse capture failed - click the screen again to retry', 'warn');
@@ -2357,6 +2366,39 @@ make all</code>
 
                     /* Show the click-to-focus overlay once the emulator is ready */
                     showClickToFocus();
+
+                    /* Add mouse event debugging */
+                    log('=== MOUSE EVENT DEBUGGING ENABLED ===', 'info');
+                    var screenContainer = document.getElementById('screen_container');
+                    var canvas = screenContainer ? screenContainer.querySelector('canvas') : null;
+
+                    if (canvas) {
+                        log('Canvas found for mouse event monitoring', 'success');
+
+                        /* Monitor all mouse events on canvas */
+                        ['mousedown', 'mouseup', 'click', 'contextmenu', 'mousemove'].forEach(function (eventType) {
+                            canvas.addEventListener(eventType, function (e) {
+                                if (isPointerLocked) {
+                                    var buttonName = ['LEFT', 'MIDDLE', 'RIGHT'][e.button] || 'UNKNOWN';
+                                    log('Mouse Event: ' + eventType.toUpperCase() + ' - Button: ' + buttonName + ' (' + e.button + ') - Locked: YES', 'info');
+                                }
+                            }, true);
+                        });
+
+                        /* Monitor pointer lock state changes */
+                        document.addEventListener('pointerlockchange', function () {
+                            var locked = document.pointerLockElement !== null;
+                            log('Pointer Lock State Changed: ' + (locked ? 'LOCKED' : 'UNLOCKED'), locked ? 'success' : 'warn');
+                            if (locked) {
+                                log('Mouse events should now be captured by emulator', 'success');
+                            }
+                        });
+
+                    } else {
+                        log('WARNING: Canvas not found for mouse event monitoring', 'error');
+                    }
+
+                    log('====================================', 'info');
                 });
 
                 emulatorInstance.add_listener('emulator-stopped', function () {
@@ -2404,6 +2446,15 @@ make all</code>
             /* Detect browser and OS for pointer lock compatibility warnings */
             var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
             var isLinux = navigator.platform.toLowerCase().indexOf('linux') > -1;
+            var userAgent = navigator.userAgent;
+
+            log('=== BROWSER DIAGNOSTICS ===', 'info');
+            log('User Agent: ' + userAgent, 'info');
+            log('Platform: ' + navigator.platform, 'info');
+            log('Browser: ' + (isFirefox ? 'Firefox' : 'Other'), 'info');
+            log('OS: ' + (isLinux ? 'Linux' : 'Other'), 'info');
+            log('Pointer Lock API: ' + (document.body.requestPointerLock ? 'SUPPORTED' : 'NOT SUPPORTED'), 'success');
+            log('=========================', 'info');
 
             if (isFirefox && isLinux) {
                 log('Firefox on Linux detected. Pointer lock may require additional permissions.', 'warn');
