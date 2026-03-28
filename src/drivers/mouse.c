@@ -325,7 +325,14 @@ static void calibrate_tsc(void) {
     uint64_t elapsed = end - start;
     
     /* elapsed is ~1ms worth of cycles, so cycles per us = elapsed / 1000 */
-    tsc_per_us = elapsed / 1000;
+    /* Avoid 64-bit division by using 32-bit arithmetic */
+    if (elapsed > 0xFFFFFFFF) {
+        /* Very fast CPU, use upper 32 bits */
+        tsc_per_us = (uint32_t)(elapsed >> 32) * 4295; /* Approximation */
+    } else {
+        /* Normal case: use 32-bit division */
+        tsc_per_us = (uint32_t)elapsed / 1000;
+    }
     if (tsc_per_us == 0) tsc_per_us = 1000; /* Fallback: assume ~1GHz */
 }
 
