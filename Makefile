@@ -70,6 +70,10 @@ CFLAGS += -c
 
 # Library path for compiler helpers (floating point, libgcc etc)
 LIBGCC  := $(shell $(GCC) -m32 -print-libgcc-file-name)
+# Fallback to 32-bit path if auto-detection fails
+ifeq ($(LIBGCC),)
+    LIBGCC := /usr/lib/gcc/x86_64-linux-gnu/13/32/libgcc.a
+endif
 
 # Linker flags
 # LDFLAGS set above based on OS
@@ -250,7 +254,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 # Kernel Linking (with Rust library if available)
 $(KERNEL_BIN): $(ALL_OBJS) link.ld | $(BUILD_DIR)
 	@echo "Linking kernel..."
-	$(LD) $(LDFLAGS) -o $@ $(ALL_OBJS) $(LIBGCC)
+	$(LD) $(LDFLAGS) -o $@ $(ALL_OBJS) /usr/lib/gcc/x86_64-linux-gnu/13/32/libgcc.a
 	@echo "✓ Kernel linked successfully"
 	@$(PYTHON) -c "import os; sz=os.path.getsize('$@'); print(f'Kernel size: {sz} bytes ({sz//1024}K)' )"
 
