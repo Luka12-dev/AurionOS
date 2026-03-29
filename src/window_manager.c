@@ -33,7 +33,7 @@ OSSettings g_settings = {
     .startup_app_idx = 0,      /* Terminal */
     .dock_magnification = 1,   /* Enabled */
     .dock_transparent = 1,     /* Transparent (default) */
-    .resolution = 6            /* 1920x1080 (Modern high-res display) */
+    .resolution = 1            /* 1024x768 (Default) */
 };
 
 /* Forward declarations for filesystem helpers from commands.c */
