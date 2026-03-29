@@ -10,7 +10,7 @@ typedef struct {
     int startup_app_idx;       /* -1=None, 0=Terminal (default), 1=Notepad, ... */
     int dock_magnification;    /* 1=Enabled (default), 0=Disabled */
     int dock_transparent;      /* 1=Transparent (default), 0=Opaque */
-    int resolution;            /* 0=800x600, 1=1024x768, 2=1280x720, 3=1280x1024, 4=1440x900, 5=1600x900, 6=1920x1080 (def), 7=2560x1440 */
+    int resolution;            /* 0=800x600, 1=1024x768 (def), 2=1280x720, 3=1280x1024, 4=1440x900, 5=1600x900, 6=1920x1080, 7=2560x1440 */
 } OSSettings;
 
 /* The global settings instance */
