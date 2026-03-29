@@ -2269,8 +2269,37 @@ make all</code>
                             }
                         }
 
+                        function handleMouseClick(e) {
+                            if (!vmFocused || !emulatorReady) return;
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            /* Sync position first */
+                            syncMousePosition(e);
+
+                            /* Send click to emulator */
+                            if (emulatorInstance && emulatorInstance.bus) {
+                                var isLeft = e.button === 0;
+                                var isMiddle = e.button === 1;
+                                var isRight = e.button === 2;
+                                emulatorInstance.bus.send('mouse-click', [isLeft, isMiddle, isRight]);
+                            }
+                        }
+
+                        function handleMouseRelease(e) {
+                            if (!vmFocused || !emulatorReady) return;
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            /* Send release to emulator */
+                            if (emulatorInstance && emulatorInstance.bus) {
+                                emulatorInstance.bus.send('mouse-click', [false, false, false]);
+                            }
+                        }
+
                         container.addEventListener('mousemove', syncMousePosition, { passive: false });
-                        container.addEventListener('mousedown', syncMousePosition, { passive: false });
+                        container.addEventListener('mousedown', handleMouseClick, { passive: false });
+                        container.addEventListener('mouseup', handleMouseRelease, { passive: false });
 
                         /* STOP wheel scrolling when focused */
                         container.addEventListener('wheel', function (e) {
