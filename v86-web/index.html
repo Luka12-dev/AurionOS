@@ -2222,9 +2222,7 @@ make all</code>
                 screen_container: document.getElementById('screen_container'),
                 bios: { url: 'seabios.bin' },
                 vga_bios: { url: 'vgabios.bin' },
-                autostart: true,
-                /* Force absolute mouse mode - fixes Linux pointer lock issues */
-                mouse_send_click: false
+                autostart: true
             };
 
             if (cdromConfig.url) settings.cdrom = { url: cdromConfig.url };
