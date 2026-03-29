@@ -112,129 +112,58 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes cardIn {
-            from {
-                opacity: 0;
-                transform: translateY(16px) scale(0.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         @keyframes pulseDot {
-
-            0%,
-            100% {
-                opacity: 0.4;
-            }
-
-            50% {
-                opacity: 1;
-            }
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
         }
 
         @keyframes pulseRing {
-            0% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-
-            100% {
-                transform: scale(2.2);
-                opacity: 0;
-            }
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(2.2); opacity: 0; }
         }
 
         @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-
-            100% {
-                background-position: 200% 0;
-            }
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         @keyframes subtleFloat {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-4px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
 
         @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes floatUp {
-            0% {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            60% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(30px); }
+            60% { opacity: 1; }
+            100% { transform: translateY(0); }
         }
 
         @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateY(8px);
-            }
+            to { opacity: 0; transform: translateY(8px); }
         }
 
         .topbar {
@@ -252,9 +181,7 @@
             transition: background var(--transition-slow);
         }
 
-        .topbar>* {
-            pointer-events: auto;
-        }
+        .topbar>* { pointer-events: auto; }
 
         .topbar.scrolled {
             background: rgba(0, 0, 0, 0.95);
@@ -271,9 +198,7 @@
             transition: opacity var(--transition);
         }
 
-        .brand:hover {
-            opacity: 0.85;
-        }
+        .brand:hover { opacity: 0.85; }
 
         .brand-icon {
             width: 32px;
@@ -283,9 +208,7 @@
             transition: transform var(--transition);
         }
 
-        .brand:hover .brand-icon {
-            transform: scale(1.05);
-        }
+        .brand:hover .brand-icon { transform: scale(1.05); }
 
         .brand-text {
             display: flex;
@@ -355,9 +278,7 @@
             border-color: var(--border-hover);
         }
 
-        .nav-link.github-link svg {
-            fill: currentColor;
-        }
+        .nav-link.github-link svg { fill: currentColor; }
 
         .nav-separator {
             width: 1px;
@@ -586,12 +507,6 @@
             margin: 0 2px;
         }
 
-        /*
-         * CURSOR HIDING:
-         * - pointer-locked class: added when pointer lock is active (belt)
-         * - vm-focused class: added on click even if pointer lock fails (suspenders)
-         * Both set cursor: none on everything relevant.
-         */
         body.pointer-locked,
         body.pointer-locked * {
             cursor: none !important;
@@ -653,9 +568,7 @@
             animation: floatUp 0.6s ease-out 0.1s both;
         }
 
-        .hero h1 .accent {
-            color: var(--accent);
-        }
+        .hero h1 .accent { color: var(--accent); }
 
         .hero-subtitle {
             font-size: var(--font-size-md);
@@ -747,9 +660,7 @@
             line-height: 0;
         }
 
-        .screen-wrapper:hover {
-            border-color: var(--border-hover);
-        }
+        .screen-wrapper:hover { border-color: var(--border-hover); }
 
         .screen-wrapper.running {
             box-shadow: 0 0 0 1px rgba(212, 149, 42, 0.04), var(--shadow-glow), var(--shadow-xl);
@@ -770,24 +681,15 @@
             justify-content: center;
         }
 
-        .screen-wrapper.fullscreen #screen_container canvas {
-            display: block;
-        }
+        .screen-wrapper.fullscreen #screen_container canvas { display: block; }
 
         #screen_container {
             background: #000;
             position: relative;
         }
 
-        #screen_container canvas {
-            display: block;
-        }
+        #screen_container canvas { display: block; }
 
-        /*
-         * CLICK-TO-FOCUS: pointer-events: none
-         * Purely visual. Clicks pass through to the canvas.
-         * We hide it via JS when the user clicks the canvas.
-         */
         .click-to-focus {
             position: absolute;
             top: 0;
@@ -807,9 +709,7 @@
             pointer-events: none;
         }
 
-        .click-to-focus.hidden {
-            opacity: 0;
-        }
+        .click-to-focus.hidden { opacity: 0; }
 
         .click-to-focus-icon {
             width: 48px;
@@ -892,7 +792,6 @@
             background-size: 200% 100%;
         }
 
-        /* Toolbar: container is pointer-events:none, buttons are auto */
         .screen-toolbar {
             position: absolute;
             bottom: 0;
@@ -909,13 +808,9 @@
             pointer-events: none;
         }
 
-        .screen-toolbar>* {
-            pointer-events: auto;
-        }
+        .screen-toolbar>* { pointer-events: auto; }
 
-        .screen-wrapper:hover .screen-toolbar {
-            opacity: 1;
-        }
+        .screen-wrapper:hover .screen-toolbar { opacity: 1; }
 
         .screen-wrapper.fullscreen .screen-toolbar {
             opacity: 1;
@@ -943,9 +838,7 @@
             background: var(--text-dim);
         }
 
-        .toolbar-status .mini-dot.active {
-            background: var(--success);
-        }
+        .toolbar-status .mini-dot.active { background: var(--success); }
 
         .toolbar-right {
             display: flex;
@@ -975,9 +868,7 @@
             border-color: rgba(255, 255, 255, 0.15);
         }
 
-        .toolbar-btn:active {
-            transform: scale(0.97);
-        }
+        .toolbar-btn:active { transform: scale(0.97); }
 
         .toolbar-btn svg {
             width: 13px;
@@ -1028,13 +919,8 @@
             animation: pulseDot 1.5s ease-in-out infinite;
         }
 
-        .status-dot.running {
-            background: var(--success);
-        }
-
-        .status-dot.error {
-            background: var(--error);
-        }
+        .status-dot.running { background: var(--success); }
+        .status-dot.error { background: var(--error); }
 
         .status-ring {
             position: absolute;
@@ -1110,9 +996,7 @@
             background: var(--accent-glow);
         }
 
-        .drop-zone.drag-over {
-            border-style: solid;
-        }
+        .drop-zone.drag-over { border-style: solid; }
 
         .drop-zone-icon {
             width: 40px;
@@ -1122,9 +1006,7 @@
             transition: color var(--transition);
         }
 
-        .drop-zone:hover .drop-zone-icon {
-            color: var(--accent);
-        }
+        .drop-zone:hover .drop-zone-icon { color: var(--accent); }
 
         .drop-zone-title {
             font-size: var(--font-size-base);
@@ -1165,9 +1047,7 @@
             pointer-events: none;
         }
 
-        .drop-zone:hover .drop-zone-btn {
-            background: var(--accent-hover);
-        }
+        .drop-zone:hover .drop-zone-btn { background: var(--accent-hover); }
 
         .features-section {
             width: 100%;
@@ -1211,9 +1091,7 @@
             transition: background var(--transition);
         }
 
-        .feature-card:hover .feature-icon {
-            background: var(--accent-glow-strong);
-        }
+        .feature-card:hover .feature-icon { background: var(--accent-glow-strong); }
 
         .feature-icon svg {
             width: 18px;
@@ -1254,9 +1132,7 @@
             transition: border-color var(--transition);
         }
 
-        .info-card:hover {
-            border-color: var(--border-hover);
-        }
+        .info-card:hover { border-color: var(--border-hover); }
 
         .info-card h3 {
             font-size: var(--font-size-base);
@@ -1315,9 +1191,7 @@
             font-family: var(--font-sans);
         }
 
-        .debug-toggle:hover {
-            color: var(--text-dim);
-        }
+        .debug-toggle:hover { color: var(--text-dim); }
 
         .debug-toggle .arrow {
             display: inline-block;
@@ -1325,9 +1199,7 @@
             font-size: 0.7em;
         }
 
-        .debug-toggle.open .arrow {
-            transform: rotate(90deg);
-        }
+        .debug-toggle.open .arrow { transform: rotate(90deg); }
 
         #debug_log {
             font-family: var(--font-mono);
@@ -1357,9 +1229,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.02);
         }
 
-        #debug_log .log-entry:last-child {
-            border-bottom: none;
-        }
+        #debug_log .log-entry:last-child { border-bottom: none; }
 
         #debug_log .log-time {
             color: #333;
@@ -1372,13 +1242,8 @@
             font-weight: 600;
         }
 
-        #debug_log .log-success {
-            color: var(--success);
-        }
-
-        #debug_log .log-warn {
-            color: var(--warning);
-        }
+        #debug_log .log-success { color: var(--success); }
+        #debug_log .log-warn { color: var(--warning); }
 
         .shortcuts-overlay {
             position: fixed;
@@ -1428,9 +1293,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .shortcut-row:last-child {
-            border-bottom: none;
-        }
+        .shortcut-row:last-child { border-bottom: none; }
 
         .shortcut-action {
             font-size: 0.85em;
@@ -1488,9 +1351,7 @@
             max-width: 360px;
         }
 
-        .toast.leaving {
-            animation: fadeOut 0.25s ease-out forwards;
-        }
+        .toast.leaving { animation: fadeOut 0.25s ease-out forwards; }
 
         .toast-icon {
             width: 18px;
@@ -1498,21 +1359,10 @@
             flex-shrink: 0;
         }
 
-        .toast.toast-success .toast-icon {
-            color: var(--success);
-        }
-
-        .toast.toast-error .toast-icon {
-            color: var(--error);
-        }
-
-        .toast.toast-info .toast-icon {
-            color: var(--info);
-        }
-
-        .toast.toast-warn .toast-icon {
-            color: var(--warning);
-        }
+        .toast.toast-success .toast-icon { color: var(--success); }
+        .toast.toast-error .toast-icon { color: var(--error); }
+        .toast.toast-info .toast-icon { color: var(--info); }
+        .toast.toast-warn .toast-icon { color: var(--warning); }
 
         .footer {
             width: 100%;
@@ -1555,98 +1405,32 @@
             transition: color var(--transition);
         }
 
-        .footer-link:hover {
-            color: var(--text-dim);
-        }
+        .footer-link:hover { color: var(--text-dim); }
 
         @media (max-width: 768px) {
-            .topbar {
-                padding: 12px var(--space-md);
-            }
-
-            .brand-tagline {
-                display: none;
-            }
-
-            .brand-name {
-                font-size: 0.75em;
-            }
-
-            .nav-link span {
-                display: none;
-            }
-
-            .nav-separator {
-                display: none;
-            }
-
-            .hero {
-                padding: var(--space-2xl) 0 var(--space-lg);
-            }
-
-            .hero h1 {
-                font-size: var(--font-size-2xl);
-            }
-
-            .main {
-                padding: 70px var(--space-md) var(--space-lg);
-            }
-
-            .startup-card {
-                padding: var(--space-lg);
-            }
-
-            .startup-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .info-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .status-area {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .footer {
-                flex-direction: column;
-                gap: var(--space-md);
-                text-align: center;
-            }
-
-            .toast-container {
-                left: var(--space-md);
-                right: var(--space-md);
-            }
-
-            .toast {
-                max-width: 100%;
-            }
+            .topbar { padding: 12px var(--space-md); }
+            .brand-tagline { display: none; }
+            .brand-name { font-size: 0.75em; }
+            .nav-link span { display: none; }
+            .nav-separator { display: none; }
+            .hero { padding: var(--space-2xl) 0 var(--space-lg); }
+            .hero h1 { font-size: var(--font-size-2xl); }
+            .main { padding: 70px var(--space-md) var(--space-lg); }
+            .startup-card { padding: var(--space-lg); }
+            .startup-actions { flex-direction: column; align-items: stretch; }
+            .features-grid { grid-template-columns: 1fr; }
+            .info-cards { grid-template-columns: 1fr; }
+            .status-area { flex-direction: column; align-items: flex-start; }
+            .footer { flex-direction: column; gap: var(--space-md); text-align: center; }
+            .toast-container { left: var(--space-md); right: var(--space-md); }
+            .toast { max-width: 100%; }
         }
 
         @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 1.6em;
-            }
-
-            .hero-subtitle {
-                font-size: 0.88em;
-            }
-
-            .startup-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .toolbar-left {
-                display: none;
-            }
+            .hero h1 { font-size: 1.6em; }
+            .hero-subtitle { font-size: 0.88em; }
+            .startup-header { flex-direction: column; text-align: center; }
+            .toolbar-left { display: none; }
         }
     </style>
 </head>
@@ -1933,7 +1717,6 @@ make all</code>
         var isPointerLocked = false;
         var isFullscreen = false;
         var emulatorReady = false;
-        var isLinux = /Linux/i.test(navigator.userAgent) && !/Android/i.test(navigator.userAgent);
         var vmFocused = false;
 
         function getEmulatorCanvas() {
@@ -1982,31 +1765,12 @@ make all</code>
             if (o) o.classList.add('hidden');
         }
 
-        /*
-         * Focus/unfocus the VM.
-         * "Focus" means: overlay hidden, cursor hidden, pointer locked (Windows only).
-         * "Unfocus" means: overlay shown, cursor visible, pointer unlocked.
-         */
         function focusVM() {
             if (vmFocused) return;
             vmFocused = true;
             hideClickToFocus();
             document.body.classList.add('vm-focused');
-
-            /* Request pointer lock on the canvas - Windows only, Linux uses absolute mode */
-            if (!isLinux) {
-                var canvas = getEmulatorCanvas();
-                if (canvas) {
-                    var req = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-                    if (req) {
-                        try { req.call(canvas); }
-                        catch (e) { log('Pointer lock request failed: ' + e.message, 'warn'); }
-                    }
-                }
-                log('VM focused — cursor hidden, pointer lock requested');
-            } else {
-                log('VM focused — cursor hidden (Linux: absolute mouse mode, no pointer lock)');
-            }
+            log('VM focused — cursor hidden, V86 handles mouse natively');
         }
 
         function unfocusVM() {
@@ -2017,11 +1781,7 @@ make all</code>
             log('VM unfocused — overlay shown');
         }
 
-        /*
-         * POINTER LOCK: watch for changes.
-         * When locked → hide cursor (browser does it) + add class.
-         * When unlocked → show overlay + remove class.
-         */
+        /* Pointer lock change listener */
         (function () {
             var banner = document.getElementById('mouse_lock_banner');
 
@@ -2042,7 +1802,6 @@ make all</code>
                 } else {
                     document.body.classList.remove('pointer-locked');
                     banner.classList.remove('visible');
-                    /* Only unfocus if we were previously focused */
                     if (vmFocused) {
                         unfocusVM();
                     }
@@ -2054,52 +1813,38 @@ make all</code>
             document.addEventListener('mozpointerlockchange', onPointerLockChange, false);
 
             document.addEventListener('pointerlockerror', function () {
-                log('Pointer lock denied — using cursor:none fallback', 'warn');
-                /*
-                 * Pointer lock failed, but we still hide the cursor via CSS.
-                 * The vm-focused class on body triggers cursor:none on #screen_container.
-                 * V86 still works in absolute mouse mode.
-                 */
+                log('Pointer lock denied — V86 will use its own mouse handling', 'warn');
             }, false);
             document.addEventListener('mozpointerlockerror', function () {
-                log('Pointer lock denied (Firefox) — using cursor:none fallback', 'warn');
+                log('Pointer lock denied (Firefox) — V86 will use its own mouse handling', 'warn');
             }, false);
         })();
 
         /*
          * CANVAS CLICK HANDLER:
-         * Attached to screen_container so it catches clicks on the canvas
-         * (the overlay has pointer-events:none so clicks pass through).
-         *
-         * On mousedown:
-         * 1. Hide the overlay immediately
-         * 2. Hide the host cursor (via vm-focused class)
-         * 3. Request pointer lock on the canvas
-         *
-         * This is a REAL user gesture so requestPointerLock() will work
-         * on all browsers including Firefox on Linux.
+         * On mousedown inside screen_container:
+         *   1. Hide the click-to-focus overlay
+         *   2. Hide the host cursor via CSS class
+         *   3. Do NOT preventDefault or stopPropagation — let V86 receive the event
          */
         (function () {
             var sc = document.getElementById('screen_container');
 
             sc.addEventListener('mousedown', function (e) {
                 if (!emulatorReady) return;
-                if (isPointerLocked) return; /* Already locked */
+                if (vmFocused) return; /* Already focused, let V86 handle normally */
 
-                /* Focus the VM: hide overlay + cursor, lock pointer */
+                /* Just focus the VM UI (hide overlay, hide cursor). 
+                   Do NOT call preventDefault/stopPropagation — V86 needs this event. */
                 focusVM();
             });
         })();
 
-        /*
-         * Click OUTSIDE the emulator → unfocus VM (if pointer lock is not active).
-         * If pointer lock IS active, Esc is the only way to release.
-         */
+        /* Click outside emulator → unfocus VM */
         document.addEventListener('mousedown', function (e) {
             if (!vmFocused) return;
-            if (isPointerLocked) return; /* Esc handles this */
+            if (isPointerLocked) return;
 
-            /* Check if click is inside screen_container */
             var sc = document.getElementById('screen_container');
             if (sc && !sc.contains(e.target)) {
                 unfocusVM();
@@ -2243,73 +1988,34 @@ make all</code>
                         log('Canvas: ' + canvas.width + 'x' + canvas.height, 'success');
                         if (!canvas.hasAttribute('tabindex')) canvas.setAttribute('tabindex', '0');
 
-                        /* CRITICAL FIX: Sync mouse ONLY when focused, STOP scrolling */
+                        /*
+                         * FIX: Do NOT add any custom mouse handlers.
+                         * V86 handles all mouse input (move, click, scroll) internally
+                         * via its own event listeners on screen_container.
+                         *
+                         * The ONLY thing we do is prevent page scrolling when the
+                         * user scrolls over the VM screen while focused.
+                         * We use { passive: false } but do NOT call stopPropagation(),
+                         * so V86 still receives the wheel event for scroll input.
+                         */
                         var container = document.getElementById('screen_container');
 
-                        function syncMousePosition(e) {
-                            if (!vmFocused || !emulatorReady) return;
-
-                            /* PREVENT scrolling and event bubbling */
-                            e.preventDefault();
-                            e.stopPropagation();
-
-                            var rect = canvas.getBoundingClientRect();
-
-                            /* Calculate EXACT pixel coordinates on emulated screen */
-                            var mouseX = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
-                            var mouseY = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
-
-                            /* Clamp to screen bounds */
-                            mouseX = Math.max(0, Math.min(canvas.width - 1, mouseX));
-                            mouseY = Math.max(0, Math.min(canvas.height - 1, mouseY));
-
-                            /* Use V86's mouse_set_absolute API for EXACT positioning */
-                            if (emulatorInstance && emulatorInstance.mouse_set_absolute) {
-                                emulatorInstance.mouse_set_absolute(mouseX, mouseY);
-                            }
-                        }
-
-                        function handleMouseClick(e) {
-                            if (!vmFocused || !emulatorReady) return;
-                            e.preventDefault();
-                            e.stopPropagation();
-
-                            /* Sync position first */
-                            syncMousePosition(e);
-
-                            /* Send click to emulator */
-                            if (emulatorInstance && emulatorInstance.bus) {
-                                var isLeft = e.button === 0;
-                                var isMiddle = e.button === 1;
-                                var isRight = e.button === 2;
-                                emulatorInstance.bus.send('mouse-click', [isLeft, isMiddle, isRight]);
-                            }
-                        }
-
-                        function handleMouseRelease(e) {
-                            if (!vmFocused || !emulatorReady) return;
-                            e.preventDefault();
-                            e.stopPropagation();
-
-                            /* Send release to emulator */
-                            if (emulatorInstance && emulatorInstance.bus) {
-                                emulatorInstance.bus.send('mouse-click', [false, false, false]);
-                            }
-                        }
-
-                        container.addEventListener('mousemove', syncMousePosition, { passive: false });
-                        container.addEventListener('mousedown', handleMouseClick, { passive: false });
-                        container.addEventListener('mouseup', handleMouseRelease, { passive: false });
-
-                        /* STOP wheel scrolling when focused */
                         container.addEventListener('wheel', function (e) {
                             if (vmFocused) {
+                                /* Prevent the PAGE from scrolling, but let the event
+                                   bubble so V86 can use it for PS/2 mouse wheel */
                                 e.preventDefault();
-                                e.stopPropagation();
                             }
                         }, { passive: false });
 
-                        log('Mouse sync: EXACT positioning + scroll block active', 'success');
+                        /* Prevent right-click context menu on the VM canvas */
+                        container.addEventListener('contextmenu', function (e) {
+                            if (vmFocused) {
+                                e.preventDefault();
+                            }
+                        });
+
+                        log('V86 mouse handling: native (no custom interceptors)', 'success');
                     } else {
                         log('No canvas found!', 'error');
                     }
@@ -2348,7 +2054,6 @@ make all</code>
         window.onload = function () {
             log('Platform: ' + navigator.platform);
             log('UA: ' + navigator.userAgent.substring(0, 120));
-            log('Mouse mode: ' + (isLinux ? 'Absolute (no pointer lock)' : 'Pointer lock enabled'));
             hideClickToFocus();
 
             setTimeout(function () {
