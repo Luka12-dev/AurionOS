@@ -1,0 +1,47 @@
+# Build artifacts
+build/
+*.o
+*.bin
+*.img
+*.iso
+*.elf
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Log files
+*.log
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# OneDrive parent directories (don't track parent folders)
+../../../*
+!../../../AurionOS-main-final/

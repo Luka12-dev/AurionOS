@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AurionOS - Web Demo</title>
+    <link rel="icon" type="image/png" href="AurionOS.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #e8e4de;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 32px;
+            opacity: 0.9;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #d4952a;
+            margin-bottom: 24px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #b0a999;
+            margin-bottom: 16px;
+        }
+
+        .note {
+            font-size: 0.9em;
+            color: #777069;
+            margin-top: 32px;
+        }
+
+        a {
+            color: #d4952a;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        a:hover {
+            border-bottom-color: #d4952a;
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 12px 24px;
+            background: #d4952a;
+            color: #000000;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #e0a435;
+            border-bottom-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="AurionOS.png" alt="AurionOS Logo" class="logo">
+        <h1>AurionOS Web Demo</h1>
+        <div class="status">Under Maintenance</div>
+        <p>The web-based demo is currently being updated and will be available in a few days.</p>
+        <p>In the meantime, you can download AurionOS and run it locally in VirtualBox, VMware, or QEMU.</p>
+        <a href="https://github.com/Luka12-dev/AurionOS/releases/" class="download-btn">Download AurionOS</a>
+        <p class="note">Thank you for your patience!</p>
+    </div>
+</body>
+</html>
