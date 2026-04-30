@@ -179,7 +179,7 @@ C_SOURCES  := $(SRC_DIR)/drivers/vbe_graphics.c \
               AurionGL/auriongl.c \
               Python/core/aurion_python.c \
               Python/py_modules.c \
-              drivers/mp3/mp3_player.c
+              src/drivers/mp3/mp3_player.c
 
 # Object files
 ASM_OBJS      := $(patsubst $(SRC_DIR)/%.asm,$(OBJ_DIR)/%.o,$(ASM_KERNEL))
