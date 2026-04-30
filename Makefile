@@ -67,8 +67,8 @@ CFLAGS += -mpreferred-stack-boundary=2 -mno-mmx -mno-sse -mno-sse2
 CFLAGS += -c
 
 # MicroPython paths
-MICROPYTHON_DIR := MicroPython
-MICROPYTHON_LIB := $(MICROPYTHON_DIR)/build/libmicropython.a
+MICROPYTHON_DIR := Python
+MICROPYTHON_LIB := $(MICROPYTHON_DIR)/build/libaurion_python.a
 
 # Library path for compiler helpers (floating point, libgcc etc)
 LIBGCC  := $(shell $(GCC) -m32 -print-libgcc-file-name)
@@ -137,6 +137,7 @@ C_SOURCES  := $(SRC_DIR)/drivers/vbe_graphics.c \
               $(SRC_DIR)/terminal.c \
               $(SRC_DIR)/gui_apps.c \
               $(SRC_DIR)/app_3d_demo.c \
+              $(SRC_DIR)/app_task_manager.c \
               $(SRC_DIR)/installer.c \
               $(SRC_DIR)/commands.c \
               $(SRC_DIR)/cmd_netmode.c \
@@ -161,7 +162,6 @@ C_SOURCES  := $(SRC_DIR)/drivers/vbe_graphics.c \
     $(SRC_DIR)/firmware_loader.c \
               $(SRC_DIR)/scrollback.c \
               $(SRC_DIR)/cmd_make.c \
-              $(SRC_DIR)/cmd_micropython.c \
               $(SRC_DIR)/cmd_python.c \
               $(SRC_DIR)/cmd_net_test.c \
               $(SRC_DIR)/libm_stubs.c \
@@ -176,7 +176,10 @@ C_SOURCES  := $(SRC_DIR)/drivers/vbe_graphics.c \
               $(SRC_DIR)/Blaze/blaze_js.c \
               $(SRC_DIR)/Blaze/blaze_app.c \
               $(SRC_DIR)/rust_driver_stubs.c \
-              AurionGL/auriongl.c
+              AurionGL/auriongl.c \
+              Python/core/aurion_python.c \
+              Python/py_modules.c \
+              drivers/mp3/mp3_player.c
 
 # Object files
 ASM_OBJS      := $(patsubst $(SRC_DIR)/%.asm,$(OBJ_DIR)/%.o,$(ASM_KERNEL))
@@ -286,19 +289,15 @@ $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	@$(GCC) $(CFLAGS) -Iinclude $< -o $@
 
 # Kernel Linking (with Rust library if available, MicroPython disabled)
-$(KERNEL_BIN): $(ALL_OBJS) $(MICROPYTHON_LIB) link.ld | $(BUILD_DIR)
+$(KERNEL_BIN): $(ALL_OBJS) link.ld | $(BUILD_DIR)
 	@echo "Linking kernel..."
-	$(LD) $(LDFLAGS) -o $@ $(ALL_OBJS) $(MICROPYTHON_LIB) $(LIBGCC)
+	$(LD) $(LDFLAGS) -o $@ $(ALL_OBJS) $(LIBGCC)
 	@echo "✓ Kernel linked successfully"
 	@$(PYTHON) -c "import os; sz=os.path.getsize('$@'); print(f'Kernel size: {sz} bytes ({sz//1024}K)' )"
 
 # Build MicroPython runtime library (standalone, not linked into kernel by default)
-python-runtime: $(MICROPYTHON_LIB)
-	@echo "✓ Python runtime built: $(MICROPYTHON_LIB)"
-
-$(MICROPYTHON_LIB): | $(BUILD_DIR)
-	@echo "Building Python runtime (MicroPython)..."
-	@$(MAKE) -C $(MICROPYTHON_DIR) all
+python-runtime:
+	@echo "Python runtime not built as separate library - embedded in kernel"
 
 # Floppy Image Assembly (for QEMU)
 $(FLOPPY_IMG): $(BOOT_BIN) $(KERNEL_BIN) tools/mkfloppy.py
@@ -488,20 +487,12 @@ clean:
 .PHONY: clean-all
 clean-all:
 	@echo "Cleaning ALL build artifacts including HDD..."
-	@echo "Cleaning ALL build artifacts including HDD..."
 	@$(RMDIR) $(call pathfix,$(BUILD_DIR))
 	@if [ -d "$(MICROPYTHON_DIR)/build" ]; then \
 		echo "Cleaning MicroPython build artifacts..."; \
 		$(RMDIR) $(call pathfix,$(MICROPYTHON_DIR)/build); \
 	fi
 	@echo "✓ Full clean complete"
-
-.PHONY: clean-objs
-clean-objs:
-	@echo "Cleaning object files..."
-	@$(RMDIR) $(call pathfix,$(OBJ_DIR))
-	@if [ -d $(MICROPYTHON_DIR) ]; then $(MAKE) -C $(MICROPYTHON_DIR) clean; fi
-	@echo "✓ Object files cleaned"
 
 
 

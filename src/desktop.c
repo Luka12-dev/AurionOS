@@ -124,8 +124,10 @@ static DesktopApp desktop_apps[] = {
     {"Settings",      app_settings_create,    icon_draw_png_settings},
     {"Snake",         app_snake_create,       icon_draw_png_snake},
     {"3D Demo",       app_3d_demo_create,     icon_draw_png_3d_demo},
+    {"Task Manager",  app_task_manager_create, icon_draw_png_taskmgr},
+    {"Audio Manager", app_audio_manager_create, icon_draw_png_audiomgr},
 };
-#define NUM_APPS 11
+#define NUM_APPS 13
 
 /* Desktop file/folder items */
 #define MAX_DESKTOP_ITEMS 32

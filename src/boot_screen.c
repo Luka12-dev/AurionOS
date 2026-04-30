@@ -341,9 +341,15 @@ static void draw_boot_background(int sw, int sh) {
 
 /* Boot screen main */
 
+extern void mp3_init(void);
+extern void audio_play_boot_sound(void);
+
 void boot_screen_show(void) {
     int sw = gpu_get_width();
     int sh = gpu_get_height();
+
+    mp3_init();
+    audio_play_boot_sound();
 
     uint32_t start_tick = get_ticks();
     uint32_t duration = 200; /* ~2 seconds if 100Hz */

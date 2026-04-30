@@ -19,6 +19,8 @@ void icon_draw_png_file(int x, int y);
 void icon_draw_png_snake(int x, int y);
 void icon_draw_png_3d_demo(int x, int y);
 void icon_draw_png_cube(int x, int y);
+void icon_draw_png_taskmgr(int x, int y);
+void icon_draw_png_audiomgr(int x, int y);
 
 
 #endif
