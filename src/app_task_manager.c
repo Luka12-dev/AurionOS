@@ -319,39 +319,36 @@ static void task_manager_on_draw(Window *win)
                    0xFF6B7280, 0x00000000);
 }
 
-static void task_manager_on_key(Window *win, char key, int key_code, bool ctrl, bool shift)
+static void task_manager_on_key(Window *win, uint16_t key)
 {
     TaskManagerState *state = (TaskManagerState *)win->app_data;
     if (!state)
         return;
 
-    if (key == 0 && key_code == 0x48)
+    uint8_t scan = (key >> 8) & 0xFF;
+    uint8_t ascii = key & 0xFF;
+
+    if (scan == 0x48 && state->selected_idx > 0)
     {
-        if (state->selected_idx > 0)
+        state->selected_idx--;
+        if (state->selected_idx < state->scroll_offset)
+            state->scroll_offset = state->selected_idx;
+    }
+    else if (scan == 0x50 && state->selected_idx < state->process_count - 1)
+    {
+        state->selected_idx++;
+        int visible_rows = (win->h - 190) / 22;
+        if (state->selected_idx >= state->scroll_offset + visible_rows)
         {
-            state->selected_idx--;
-            if (state->selected_idx < state->scroll_offset)
-                state->scroll_offset = state->selected_idx;
+            state->scroll_offset = state->selected_idx - visible_rows + 1;
         }
     }
-    else if (key == 0 && key_code == 0x50)
-    {
-        if (state->selected_idx < state->process_count - 1)
-        {
-            state->selected_idx++;
-            int visible_rows = (win->h - 190) / 22;
-            if (state->selected_idx >= state->scroll_offset + visible_rows)
-            {
-                state->scroll_offset = state->selected_idx - visible_rows + 1;
-            }
-        }
-    }
-    else if (key == 0 && key_code == 0x4F)
+    else if (scan == 0x4F)
     {
         state->scroll_offset = 0;
         state->selected_idx = 0;
     }
-    else if (key == 0 && key_code == 0x4D)
+    else if (scan == 0x4D)
     {
         int visible_rows = (win->h - 190) / 22;
         state->scroll_offset = state->process_count - visible_rows;
@@ -359,22 +356,22 @@ static void task_manager_on_key(Window *win, char key, int key_code, bool ctrl, 
             state->scroll_offset = 0;
         state->selected_idx = state->process_count - 1;
     }
-    else if (key == 0 && key_code == 0x3E)
+    else if (scan == 0x3E)
     {
         state->selected_idx = state->scroll_offset;
     }
-    else if (key == 0 && key_code == 0x3C)
+    else if (scan == 0x3C)
     {
         state->selected_idx = state->scroll_offset;
         int visible_rows = (win->h - 190) / 22;
         if (state->selected_idx + visible_rows - 1 < state->process_count)
             state->selected_idx = state->scroll_offset + visible_rows - 1;
     }
-    else if (key == 0 && key_code == 0x3F)
+    else if (scan == 0x3F)
     {
         state->show_cpu_graph = !state->show_cpu_graph;
     }
-    else if (key == 0 && key_code == 0x3E || (ctrl && (key == 'r' || key == 'R')))
+    else if (scan == 0x3E || ascii == 'r' || ascii == 'R')
     {
         state->selected_idx = 0;
         state->scroll_offset = 0;
@@ -622,27 +619,30 @@ static void audio_manager_on_draw(Window *win)
                    0xFF4B5563, 0x00000000);
 }
 
-static void audio_manager_on_key(Window *win, char key, int key_code, bool ctrl, bool shift)
+static void audio_manager_on_key(Window *win, uint16_t key)
 {
     AudioManagerState *state = (AudioManagerState *)win->app_data;
     if (!state)
         return;
 
-    if (key == 0 && key_code == 0x48)
+    uint8_t scan = (key >> 8) & 0xFF;
+    uint8_t ascii = key & 0xFF;
+
+    if (scan == 0x48)
     {
         if (state->selected_idx > 0)
             state->selected_idx--;
     }
-    else if (key == 0 && key_code == 0x50)
+    else if (scan == 0x50)
     {
         if (state->selected_idx < state->playlist_count - 1)
             state->selected_idx++;
     }
-    else if (key == 's' || key == 'S')
+    else if (ascii == 's' || ascii == 'S')
     {
         state->shuffle_mode = !state->shuffle_mode;
     }
-    else if (key == 'r' || key == 'R')
+    else if (ascii == 'r' || ascii == 'R')
     {
         state->repeat_mode = !state->repeat_mode;
     }

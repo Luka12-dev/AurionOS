@@ -6,6 +6,7 @@
 #include "blaze.h"
 
 static bool is_block_element(DOMNode *node);
+static void blaze_offset_node(DOMNode *node, int dx, int dy);
 
 static void blaze_layout_grid(DOMNode *node, int parent_x, int parent_y, int parent_w)
 {

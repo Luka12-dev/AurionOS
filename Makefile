@@ -58,7 +58,7 @@ pathfix = $(if $(filter Windows_NT,$(OS)),$(subst /,\,$1),$1)
 # GCC flags for 32-bit freestanding
 # NOTE: Kernel is loaded at 0x10000 by bootloader; keep size < 576KiB or it can
 # overwrite VGA memory at 0xA0000 and hang at a blinking underscore.
-CFLAGS := -m32 -ffreestanding -nostdlib -Iinclude -fno-builtin -fno-stack-protector
+CFLAGS := -m32 -ffreestanding -nostdlib -Iinclude -IPython -fno-builtin -fno-stack-protector
 CFLAGS += -Os -Wall -Wextra -std=c11
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0

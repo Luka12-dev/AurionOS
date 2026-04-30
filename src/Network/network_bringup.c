@@ -5,6 +5,7 @@
 
 #include "../../include/network.h"
 
+extern void puts(const char *s);
 extern int wifi_driver_init(void);
 extern int dhcp_init(network_interface_t *iface);
 extern int dhcp_discover(network_interface_t *iface);
