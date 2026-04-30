@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -984,11 +985,11 @@ void py_init_stdlib(void)
     PyObject *math_mod = py_new_module(py_new_str("math"));
     PyObject *random_mod = py_new_module(py_new_str("random"));
 
-    PyDict_SetItemString(os_mod->val.type_val.attrs, "name", py_new_str("AurionOS"));
-    PyDict_SetItemString(os_mod->val.type_val.attrs, "version", py_new_str("1.1 Beta"));
-    PyDict_SetItemString(sys_mod->val.type_val.attrs, "version", py_new_str("3.14.0"));
-    PyDict_SetItemString(math_mod->val.type_val.attrs, "pi", py_new_float(3.141592653589793));
-    PyDict_SetItemString(math_mod->val.type_val.attrs, "e", py_new_float(2.718281828459045));
+    py_setattr(os_mod, "name", py_new_str("AurionOS"));
+    py_setattr(os_mod, "version", py_new_str("1.1 Beta"));
+    py_setattr(sys_mod, "version", py_new_str("3.14.0"));
+    py_setattr(math_mod, "pi", py_new_float(3.141592653589793));
+    py_setattr(math_mod, "e", py_new_float(2.718281828459045));
 
     Py_INCREF(os_mod);
     Py_INCREF(sys_mod);
