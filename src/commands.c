@@ -1219,7 +1219,8 @@ static void fs_init_commands(void)
                         "math:\n\tpython math_demo.py\n"
                         "loop:\n\tpython loop_demo.py\n"
                         "files:\n\tpython files_demo.py\n"
-                        "syntax:\n\tpython syntax_error.py\n", 141);
+                        "syntax:\n\tpython syntax_error.py\n",
+                        141);
   }
 
   /* Load the active user profile (set by installer) */
@@ -1339,8 +1340,7 @@ extern int cmd_netmode(const char *args);
 /* Forward declaration for MAKE command (defined in cmd_make.c) */
 extern int cmd_make(const char *args);
 /* Forward declarations for Python command handlers */
-extern int cmd_python(const char *args);      /* legacy Aurion Python 0.2 */
-extern int cmd_micropython(const char *args); /* real MicroPython runtime */
+extern int cmd_python(const char *args); /* AurionPython interpreter */
 
 /* HTTP Client command - uses the http_client library */
 static int cmd_http_get(const char *args);
@@ -7304,8 +7304,8 @@ static const Command commands[] = {{"NET-TEST", cmd_net_test_wrapper},
 
                                    /* Utilities */
                                    {"CALC", cmd_calc},
-                                   {"PYTHON", cmd_micropython},
-                                   {"MICROPYTHON", cmd_micropython},
+                                   {"PYTHON", cmd_python},
+                                   {"MICROPYTHON", cmd_python},
                                    {"PYTHON02", cmd_python},
                                    {"HEXDUMP", cmd_hexdump},
                                    {"ASCII", cmd_ascii},

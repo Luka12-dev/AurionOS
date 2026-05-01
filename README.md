@@ -34,6 +34,7 @@ Operating systems have become bloated, opaque, and inaccessible. AurionOS reject
 ## Features
 
 ### Desktop Environment
+
 - Modern windowed GUI with taskbar and menu bar
 - Drag-and-drop window management
 - Multiple resolution support (800x600 to 2560x1440)
@@ -46,6 +47,7 @@ Operating systems have become bloated, opaque, and inaccessible. AurionOS reject
 ### Applications
 
 **Blaze Browser**
+
 - Custom HTML/CSS/JavaScript engine
 - Bookmark management
 - Tab browsing
@@ -53,6 +55,7 @@ Operating systems have become bloated, opaque, and inaccessible. AurionOS reject
 - HTTP/HTTPS support
 
 **Productivity**
+
 - Terminal with full command-line interface
 - Notepad text editor
 - File Manager with tree view
@@ -60,22 +63,26 @@ Operating systems have become bloated, opaque, and inaccessible. AurionOS reject
 - System Information viewer
 
 **Graphics**
+
 - Paint application with drawing tools
 - Color picker and palette
 - Pixel-perfect rendering
 - 3D Demo - Real-time 3D graphics showcase
 
 **Games**
+
 - Snake with scoring and speed levels
 
 ### System Features
 
 **Dual Mode Operation**
+
 - GUI Mode - Full desktop environment
 - DOS Mode - Classic command-line interface
 - Switch between modes with DOSMODE/GUIMODE commands
 
 **Storage**
+
 - Custom filesystem with persistence
 - ISO 9660 CD-ROM support
 - FAT32 support (experimental)
@@ -84,12 +91,14 @@ Operating systems have become bloated, opaque, and inaccessible. AurionOS reject
 - Application data management
 
 **Developer Tools**
-- MicroPython interpreter (full Python 3.4+ support)
+
+- AurionPython interpreter (Python 3.14 implementation)
 - Make build system
 - Text processing utilities
 - Network testing tools
 
 **3D Graphics**
+
 - AurionGL - OpenGL-inspired 3D API
 - Software rasterization with z-buffering
 - Perspective-correct texture mapping
@@ -102,21 +111,27 @@ Operating systems have become bloated, opaque, and inaccessible. AurionOS reject
 ## Screenshots
 
 ### Desktop Environment
+
 ![Desktop](assets/0.png)
 
 ### Blaze Browser
+
 ![Browser](assets/1.png)
 
 ### DOS Mode
+
 ![Terminal](assets/2.png)
 
 ### Applications
+
 ![Apps](assets/3.png)
 
 ### System Info
+
 ![System](assets/4.png)
 
 ### Installer
+
 ![Installer](assets/5.png)
 
 ---
@@ -174,6 +189,7 @@ make run
 ### Prerequisites
 
 **Linux/macOS:**
+
 ```bash
 # Ubuntu/Debian
 sudo apt install build-essential nasm qemu-system-x86 xorriso
@@ -187,13 +203,15 @@ brew install i686-elf-gcc  # Cross-compiler
 ```
 
 **Windows:**
+
 ```powershell
 # Install WSL2 (Ubuntu)
 wsl --install
 
-# Inside WSL
+# Inside WSL - Install 32-bit development libraries (REQUIRED for building)
+sudo dpkg --add-architecture i386
 sudo apt update
-sudo apt install build-essential nasm qemu-system-x86 xorriso
+sudo apt install libc6-dev-i386 gcc-multilib g++-multilib build-essential nasm qemu-system-x86 xorriso
 ```
 
 ### Build Commands
@@ -298,6 +316,7 @@ AurionOS/
 ### Commands
 
 **System**
+
 - `HELP` - Show available commands
 - `VER` - Display version
 - `CLS` / `CLEAR` - Clear screen
@@ -305,6 +324,7 @@ AurionOS/
 - `REBOOT` - Restart system
 
 **Files**
+
 - `LS` / `DIR` - List files
 - `CD <dir>` - Change directory
 - `MKDIR <name>` - Create directory
@@ -313,7 +333,8 @@ AurionOS/
 - `EDIT <file>` - Edit file
 
 **Development**
-- `PYTHON` - Start MicroPython interpreter (Python 3.4+)
+
+- `PYTHON` - Start AurionPython interpreter (Python 3.14)
 - `MAKE` - Run build system
 - `GREP <pattern> <file>` - Search text
 
@@ -388,6 +409,7 @@ This is a personal project, but if you want to:
 5. Submit a pull request
 
 Focus on:
+
 - Performance improvements
 - Hardware compatibility
 - Bug fixes
@@ -400,18 +422,21 @@ Focus on:
 ### Build Issues
 
 **"nasm: command not found"**
+
 ```bash
 # Install NASM assembler
 sudo apt install nasm  # Ubuntu/Debian
 ```
 
 **"i686-elf-gcc: command not found"**
+
 ```bash
 # Use system GCC with -m32 flag (already configured in Makefile)
 sudo apt install gcc-multilib
 ```
 
 **"Make fails on Windows"**
+
 ```bash
 # Always use WSL
 wsl make
@@ -420,21 +445,25 @@ wsl make
 ### Runtime Issues
 
 **Black screen on boot**
+
 - Try different resolution in VM settings
 - Ensure BIOS mode (not UEFI)
 - Check that ISO/HDD are properly attached
 
 **Mouse not working**
+
 - Enable USB controller in VM
 - Try PS/2 mouse instead
 - Check mouse integration settings
 
 **Network not working**
+
 - Run `NETSTART` command
 - Check network adapter type (use NE2000 or RTL8139)
 - Verify DHCP server is available
 
 **Keyboard layout wrong**
+
 - Run installer and select correct layout
 - Or edit config file in filesystem
 
@@ -443,10 +472,12 @@ wsl make
 ## Performance
 
 ### Boot Time
+
 - Cold boot to desktop: ~3 seconds (QEMU)
 - Mode switch (GUI ↔ DOS): ~1 second
 
 ### Memory Usage
+
 - Kernel: ~400 KB
 - Desktop environment: ~2 MB
 - Per application: ~100-500 KB
@@ -454,6 +485,7 @@ wsl make
 - Recommended RAM: 512 MB
 
 ### Disk Usage
+
 - ISO image: ~1.8 MB
 - With user data: Varies
 
@@ -488,6 +520,7 @@ See LICENSE file for details.
 Built by a developer who believes operating systems should be understandable, not mysterious black boxes.
 
 Special thanks to:
+
 - OSDev community for documentation
 - NASM and GCC teams for excellent tools
 - Everyone who said "you can't build an OS alone" - you were wrong
