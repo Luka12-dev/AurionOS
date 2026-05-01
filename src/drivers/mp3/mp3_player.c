@@ -10,11 +10,8 @@
 
 #include "mp3_player.h"
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "portio.h"
 
-extern void outb(uint16_t port, uint8_t value);
-extern uint8_t inb(uint16_t port);
 extern void io_wait(void);
 extern uint32_t get_ticks(void);
 
@@ -26,6 +23,18 @@ extern uint32_t get_ticks(void);
 static AudioPlayback g_current_playback;
 static bool g_audio_initialized = false;
 static float g_master_volume = 0.8f;
+
+static char ascii_tolower(char c) {
+    if (c >= 'A' && c <= 'Z') return (char)(c + ('a' - 'A'));
+    return c;
+}
+
+static bool ext_equals_ci4(const char *ext, const char *want4) {
+    return ascii_tolower(ext[0]) == ascii_tolower(want4[0]) &&
+           ascii_tolower(ext[1]) == ascii_tolower(want4[1]) &&
+           ascii_tolower(ext[2]) == ascii_tolower(want4[2]) &&
+           ascii_tolower(ext[3]) == ascii_tolower(want4[3]);
+}
 
 static void pit_set_frequency(uint32_t freq) {
     if (freq < 20 || freq > 20000) return;
@@ -70,12 +79,12 @@ bool mp3_load_file(const char *filename, AudioTrack *track) {
 
     if (len > 4) {
         const char *ext = filename + len - 4;
-        if (strcasecmp(ext, ".mp3") == 0) {
+        if (ext_equals_ci4(ext, ".mp3")) {
             track->format = AUDIO_FORMAT_MP3;
             track->sample_rate = 44100;
             track->channels = 2;
             track->bits_per_sample = 16;
-        } else if (strcasecmp(ext, ".wav") == 0) {
+        } else if (ext_equals_ci4(ext, ".wav")) {
             track->format = AUDIO_FORMAT_WAV;
             track->sample_rate = 44100;
             track->channels = 2;

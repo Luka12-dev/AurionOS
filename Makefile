@@ -30,8 +30,8 @@ ifeq ($(IS_WSL),yes)
     QEMU := qemu-system-i386
     QEMU_ISO := /mnt/c/Program Files/qemu/qemu-system-i386.exe
 else ifeq ($(OS),Windows_NT)
-    NASMFLAGS_ELF := -f win32 -g
-    LDFLAGS := -m i386pe -nostdlib -T link.ld --oformat binary
+    NASMFLAGS_ELF := -f elf32 -g
+    LDFLAGS := -m32 -nostdlib -T link.ld
     PYTHON := python
     MKDIR := mkdir
     RM := del /Q
@@ -51,6 +51,7 @@ else
 endif
 
 NASMFLAGS_BIN := -f bin
+PLATFORM_TAG := $(if $(IS_WSL),wsl,$(if $(filter Windows_NT,$(OS)),windows,linux))
 
 # Normalize paths for shell commands that run under Windows cmd.exe.
 pathfix = $(if $(filter Windows_NT,$(OS)),$(subst /,\,$1),$1)
@@ -177,8 +178,6 @@ C_SOURCES  := $(SRC_DIR)/drivers/vbe_graphics.c \
               $(SRC_DIR)/Blaze/blaze_app.c \
               $(SRC_DIR)/rust_driver_stubs.c \
               AurionGL/auriongl.c \
-              Python/core/aurion_python.c \
-              Python/py_modules.c \
               src/drivers/mp3/mp3_player.c
 
 # Object files
@@ -190,7 +189,7 @@ ALL_OBJS      := $(ASM_OBJS) $(C_OBJS)
 # Build Rules
 
 .PHONY: all all-debug python-runtime
-all: check-build-type python-runtime $(FLOPPY_IMG) $(ISO_IMG) $(HDD_IMG)
+all: check-platform check-build-type python-runtime $(FLOPPY_IMG) $(ISO_IMG) $(HDD_IMG)
 	@echo "======================================"
 	@echo "AurionOS build completed successfully!"
 	@echo "Floppy: $(FLOPPY_IMG)"
@@ -213,9 +212,28 @@ check-build-type:
 		$(RM) $(BUILD_DIR)/.debug_build; \
 	fi
 
+.PHONY: check-platform
+check-platform:
+	@mkdir -p $(BUILD_DIR) || true
+	@if [ -f $(BUILD_DIR)/.platform_tag ]; then \
+		prev=$$(cat $(BUILD_DIR)/.platform_tag); \
+		if [ "$$prev" != "$(PLATFORM_TAG)" ]; then \
+			echo "Platform/toolchain changed ($$prev -> $(PLATFORM_TAG)) - cleaning objects..."; \
+			$(MAKE) clean-objs; \
+		fi; \
+	fi
+	@echo "$(PLATFORM_TAG)" > $(BUILD_DIR)/.platform_tag
+
+.PHONY: clean-objs
+clean-objs:
+	@echo "Cleaning object files..."
+	@rm -rf $(OBJ_DIR) 2>/dev/null || true
+	@$(RM) $(call pathfix,$(KERNEL_BIN)) 2>/dev/null || true
+	@echo "Object clean complete"
+
 # Debug build with pre-installed system (skips installer)
 all-debug: CFLAGS += -DDEBUG_SKIP_INSTALL
-all-debug: check-debug-type clean-objs
+all-debug: check-platform check-debug-type clean-objs
 	@$(MAKE) $(KERNEL_BIN) $(BOOT_BIN) CFLAGS="$(CFLAGS) -DDEBUG_SKIP_INSTALL"
 	@touch $(BUILD_DIR)/.debug_build
 	@echo "======================================"
@@ -291,7 +309,9 @@ $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 # Kernel Linking (with Rust library if available, MicroPython disabled)
 $(KERNEL_BIN): $(ALL_OBJS) link.ld | $(BUILD_DIR)
 	@echo "Linking kernel..."
-	$(LD) $(LDFLAGS) -o $@ $(ALL_OBJS) $(LIBGCC)
+	$(LD) $(LDFLAGS) -o $@.exe $(ALL_OBJS) $(LIBGCC)
+	$(OBJCOPY) -O binary $@.exe $@
+	rm -f $@.exe
 	@echo "✓ Kernel linked successfully"
 	@$(PYTHON) -c "import os; sz=os.path.getsize('$@'); print(f'Kernel size: {sz} bytes ({sz//1024}K)' )"
 

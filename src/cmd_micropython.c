@@ -6,11 +6,16 @@
 extern void c_puts(const char *s);
 extern void set_attr(uint8_t a);
 
-/* MicroPython interface */
-extern void micropython_init(void);
-extern void micropython_deinit(void);
-extern void micropython_repl(void);
-extern int micropython_exec_file(const char *filename);
+/* MicroPython runtime hooks: weak fallbacks keep kernel linkable when runtime is absent. */
+__attribute__((weak)) void micropython_init(void) {}
+__attribute__((weak)) void micropython_deinit(void) {}
+__attribute__((weak)) void micropython_repl(void) {
+    c_puts("MicroPython runtime not available in this build.\n");
+}
+__attribute__((weak)) int micropython_exec_file(const char *filename) {
+    (void)filename;
+    return -1;
+}
 
 /* String helpers */
 static int mp_strlen(const char *s) {

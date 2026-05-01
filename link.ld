@@ -3,7 +3,6 @@
  * Purpose: Define memory layout for 32-bit protected mode kernel
 */
 
-OUTPUT_FORMAT("binary")
 OUTPUT_ARCH(i386)
 
 /* Entry point */
