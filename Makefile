@@ -22,7 +22,7 @@ IS_WSL := $(shell uname -r 2>/dev/null | grep -qi microsoft && echo yes)
 ifeq ($(IS_WSL),yes)
     # WSL2 - build tools are Linux/ELF, but CD-ROM QEMU can be Windows binary.
     NASMFLAGS_ELF := -f elf32 -g -F dwarf
-    LDFLAGS := -m32 -nostdlib -T link.ld -Wl,--oformat,binary -Wl,--gc-sections
+    LDFLAGS := -m32 -nostdlib -T link.ld -Wl,--oformat=binary -Wl,--gc-sections
     PYTHON := python3
     MKDIR := mkdir -p
     RM := rm -f
